@@ -112,6 +112,14 @@ Scrollable : https://stackoverflow.com/questions/46222788/how-to-create-a-row-of
   ㄴ Row()를 스크롤 가능한 ListView()로 대체
     -> 쓰는 방법을 모르겠음
     -> timetable에서 사용
+Listview in Listview : https://devmemory.tistory.com/57
+  ㄴ 리스트뷰 안의 리스트뷰에러 대처
+Margin & Padding : https://devmg.tistory.com/178
+  ㄴ 마진과 패팅사용법
+Alignment : http://daplus.net/flutter-flutter%EB%8A%94-%EB%91%90-%ED%95%AD%EB%AA%A9%EC%9D%84-%EA%B7%B9%EB%8B%A8%EC%97%90-%EC%A0%95%EB%A0%AC%ED%95%A9%EB%8B%88%EB%8B%A4-%ED%95%98%EB%82%98%EB%8A%94-%EC%99%BC%EC%AA%BD%EC%97%90/
+  ㄴ 정렬방법
+    -> crossAxisAlignment : 가로
+    -> mainAxisAlignment : 세로
 
 
 
@@ -130,7 +138,7 @@ Scrollable : https://stackoverflow.com/questions/46222788/how-to-create-a-row-of
     3. git remote set-url --delete <name> <url>     ㄴ[ url삭제 ]
 2. " + " 클릭                                       [ Changes -> Staged Changes ]
 3. " ✓ " 클릭                                       [ Staged Changes => commit ]
-  ==>> Publish Commit 버튼 클릭
+  ==>> Publish Commit / Sync Changes 버튼 클릭
 4. git push -u <name> main                            [ commit => push => github ]
   > git config --global user.email "you@example.com"
   > git config --global user.name "Your Name"
