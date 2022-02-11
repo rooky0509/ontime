@@ -130,6 +130,7 @@ Scrollable : https://stackoverflow.com/questions/46222788/how-to-create-a-row-of
     3. git remote set-url --delete <name> <url>     ㄴ[ url삭제 ]
 2. " + " 클릭                                       [ Changes -> Staged Changes ]
 3. " ✓ " 클릭                                       [ Staged Changes => commit ]
+  ==>> Publish Commit 버튼 클릭
 4. git push -u <name> main                            [ commit => push => github ]
   > git config --global user.email "you@example.com"
   > git config --global user.name "Your Name"
