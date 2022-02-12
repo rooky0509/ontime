@@ -120,7 +120,8 @@ Alignment : http://daplus.net/flutter-flutter%EB%8A%94-%EB%91%90-%ED%95%AD%EB%AA
   ㄴ 정렬방법
     -> crossAxisAlignment : 가로
     -> mainAxisAlignment : 세로
-
+Table : https://www.tutorialkart.com/flutter/flutter-table/
+  ㄴ 격자로 정렬
 
 
 /*
