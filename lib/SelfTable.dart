@@ -18,7 +18,22 @@ class _SelfTableState extends State<SelfTable>{
             RaisedButton(
                 onPressed: () {
                 },
-                child: Text('Self')
+                child: SizedBox(
+                height: double.infinity,
+                child: Card(
+                  semanticContainer: true,
+                  clipBehavior: Clip.antiAliasWithSaveLayer,
+                  child: Image.network(
+                    'https://placeimg.com/640/480/any', 
+                    fit: BoxFit.fill,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  elevation: 5,
+                  margin: EdgeInsets.all(10),
+                ),
+              ),
             ),
           ],
         ),

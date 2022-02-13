@@ -122,8 +122,11 @@ Alignment : http://daplus.net/flutter-flutter%EB%8A%94-%EB%91%90-%ED%95%AD%EB%AA
     -> mainAxisAlignment : 세로
 Table : https://www.tutorialkart.com/flutter/flutter-table/
   ㄴ 격자로 정렬
-
-
+Text정렬 : https://velog.io/@jong/Flutter-%ED%85%8D%EC%8A%A4%ED%8A%B8-%EC%A0%95%EB%A0%AC-1
+  ㄴ 텍스트가로정렬
+    -> 가로정렬+테이블기본셀정렬
+CardBorder : https://stackoverflow.com/questions/50783354/how-to-highlight-the-border-of-a-card-selected
+  ㄴ 카드 테두리 생성
 /*
 -----------------------------------------------------------------------------------------
 [ 

@@ -9,51 +9,73 @@ class TimeTable extends StatefulWidget{
 class _TimeTableState extends State<TimeTable>{
 
   Widget CardView(int index, bool active){ //, {int indexTab = i++}
-    //                                      True   :     false
-    Color background = active ? Colors.grey : Colors.grey;
-    Color title_color = active ? Colors.grey : Colors.blue;
-    Color time_color = active ? Colors.grey : Colors.blue;
-    Color border_color = active ? Colors.grey : Colors.blue;
+    //                          True   :     false
+    Color background = active ? Colors.white : Colors.white60;
+    Color title_color = active ? Colors.blueAccent : Colors.grey;
+    Color time_color = active ? Colors.blueAccent : Colors.grey;
+    Color border_color = active ? Colors.blue : Colors.grey;
+    double elevation = active ? 20.0 : 1.0;
 
     return Card(
+      shape: RoundedRectangleBorder(
+        side: new BorderSide(color: border_color, width: 2.0),
+        borderRadius: BorderRadius.circular(4.0)
+      ),
+      elevation: elevation,
+      color: background,
+      margin: EdgeInsets.fromLTRB(15, 10, 15, 0),
       child: Container(
-        margin: EdgeInsets.all(10),
+        padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
         child: Column(
           children: <Widget>[
             Table(
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               border: TableBorder.all(style: BorderStyle.none),
               children: [
                 TableRow(children: [
-                  Text("수학Ⅱ[$index]",style: TextStyle(fontSize: 25, color: title_color),textAlign: TextAlign.start),
-                  Text("13:30",style: TextStyle(fontSize: 25, color: title_color),textAlign: TextAlign.end),
+                  Text(
+                    "수학Ⅱ[$index]",
+                    style: TextStyle(
+                      fontSize: 30, 
+                      color: title_color, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0),
+                    textAlign: TextAlign.start,
+                    ),
+                  Text("13:30",style: TextStyle(fontSize: 25, color: title_color),textAlign: TextAlign.end)
                 ]),
+
                 TableRow(children: [
-                  Text("김철수",style: TextStyle(fontSize: 25, color: border_color),textAlign: TextAlign.start),
-                  Text("08:20~09:30",style: TextStyle(fontSize: 25, color: border_color),textAlign: TextAlign.end),
+                  Text("$active",style: TextStyle(fontSize: 10, color: border_color),textAlign: TextAlign.start),
+                  Text("08:20~09:30",style: TextStyle(fontSize: 10, color: border_color),textAlign: TextAlign.end),
                 ])
               ],
             ),
-            active?ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                Container(
-                  height: 80.0,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: List.generate(100, (int index) {
-                      return Card(
-                        color: Colors.blue[index * 100],
-                        child: Container(
-                          width: 50.0,
-                          height: 50.0,
-                          child: Text("$index"),
-                        ),
-                      );
-                    }),
+            active?Container(
+            height: 60, //margin값 + size값
+            //height: 70, -> 리스트뷰 전체의 길이 조절
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: List.generate(10, (int index) {
+                return Container(
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                  width: 50,
+                  height: 50,
+                  child: Card(
+                    shape: RoundedRectangleBorder(
+                      side: new BorderSide(color: border_color, width: 2.0),
+                      borderRadius: BorderRadius.circular(4.0)
+                    ),
+                    color: Colors.greenAccent,
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text("월\n${index}",style: TextStyle(fontSize: 15, color: Colors.black),textAlign: TextAlign.center,
+                    ))
                   ),
-                ),
-              ],
-            ):Text("")
+                );
+              }),
+            ),
+          ):Text("")
           ],
         )
       ),
@@ -151,31 +173,33 @@ ListView(
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white60,
       appBar: AppBar(
         title: Text('TimeTable'),
       ),
       body: Row(
         children: <Widget>[
           Container(
-            width: 70,
+            width: 75, //margin값 + size값
             //height: 70, -> 리스트뷰 전체의 길이 조절
             child: ListView(
               scrollDirection: Axis.vertical,
               children: List.generate(10, (int index) {
-                return Card(
-                  
-                  color: Colors.blue[((index-9*2).abs()-9).abs() * 100],
-                  child: Container(
-                    //width: 100.0, -> 상관없음
-                    height: 70.0,
-                    child : Center(
-                      child: Text("${index+20}\n월",style: TextStyle(fontSize: 20, color: Colors.black)),
-                    )
-                  )
+                return Container(
+                  margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                  width: 70,
+                  height: 70,
+                  child: Card(
+                    color: Colors.blue,
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text("${index+20}\n월",style: TextStyle(fontSize: 20, color: Colors.black)
+                    ))
+                  ),
                 );
               }),
             ),
-          ),
+          ), //Text("${index+20}\n월",style: TextStyle(fontSize: 20, color: Colors.black)),
           Expanded(
             flex: 1,
             child: ListView(
