@@ -133,6 +133,10 @@ Time : https://eunjin3786.tistory.com/285
   ㄴ 여러기능
 String의 여러매서드 : https://gadfactory.tistory.com/117
   ㄴ padLeft사용해서 빈칸 채움
+String to int : https://medium.com/ariel-mejia-dev/replace-string-in-flutter-c7ad5935542b
+  ㄴ int.parse("123")
+Replace : https://medium.com/ariel-mejia-dev/replace-string-in-flutter-c7ad5935542b
+  ㄴ replaceall :특정문자열에 있는 모든 특정 글자를 변경
 /*
 -----------------------------------------------------------------------------------------
 [ 

@@ -126,7 +126,10 @@ class _TimeTableState extends State<TimeTable>{
   List<String> time_tag = [
 
   ];
-  List<String> time = [
+  List<String> time = List.generate(58, (int index){
+    return "00:"+"${index+1}:00".padLeft(5,"0");
+  });
+  /*[
     "00:01:00","00:02:00",
     "00:03:00","00:04:00",
     
@@ -158,7 +161,7 @@ class _TimeTableState extends State<TimeTable>{
     "23:55:00","23:59:00",
     //  짝         홀
   ];
-  
+  */
   @override
   void dispose() {
     _timer?.cancel();
