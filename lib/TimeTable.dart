@@ -101,8 +101,43 @@ class _TimeTableState extends State<TimeTable>{
       ),
       body: Row(
         children: <Widget>[
+          /*
           Container(
-            width: 70,
+            width: 75, //margin값 + size값
+            //height: 70, -> 리스트뷰 전체의 길이 조절
+            child: ListView(
+              scrollDirection: Axis.vertical,
+              children: List.generate(14, (int index) {
+                var time = new DateTime.now().subtract(Duration(days: 2));
+                return Container(
+                  margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                  width: 70,
+                  height: 70,
+                  child: GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectDayIndex = index;
+                      });
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        side: new BorderSide(color: index == 2 ? Colors.blue : (selectDayIndex == index ? Colors.amber : Colors.grey), width: 2.0),
+                        borderRadius: BorderRadius.circular(4.0)
+                      ),
+                      color: index == 2 ? Colors.blue[300]: (selectDayIndex == index ? Colors.amber[300] : Colors.grey[300]),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text("${time.add(Duration(days:index)).day}\n${weeks[time.add(Duration(days:index)).weekday-1]}",style: TextStyle(fontSize: 20, color: Colors.black)
+                        )
+                      )
+                    ),
+                  )
+                );
+              })
+            ),
+          ),*/
+          Container(
+            width: 75,
             //height: 70, -> 리스트뷰 전체의 길이 조절
             child: ListView(
               scrollDirection: Axis.vertical,
@@ -110,21 +145,28 @@ class _TimeTableState extends State<TimeTable>{
                 int index = generateIndex-2;
                 int day = today.add(Duration(days: index)).day;
                 String week = weeks[today.add(Duration(days: index)).weekday-1];
-                return GestureDetector(
-                  onTap: (){
-                    setState(() {
-                      selectDayIndex=index;
-                    });;
-                  },
-                  child: Card(
-                    color: activeDayindex==index?Colors.blue:(selectDayIndex==index?Colors.amber:Colors.grey),
-                    child: Container(
-                      //width: 100.0, -> 상관없음
-                      height: 70.0,
-                      child : Center(
-                        child: Text("${day}\n${week}",style: TextStyle(fontSize: 20, color: Colors.black)),
+                return Container(
+                  margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                  width: 70,
+                  height: 70,
+                  child: GestureDetector(
+                    onTap: (){
+                      setState(() {
+                        selectDayIndex=index;
+                      });;
+                    },
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        side: new BorderSide(color: activeDayindex==index?Colors.blue:(selectDayIndex==index?Colors.amber:Colors.grey), width: 2.0),
+                        borderRadius: BorderRadius.circular(4.0)
+                      ),
+                      color: activeDayindex==index?Colors.blue[300]:(selectDayIndex==index?Colors.amber[300]:Colors.grey[300]),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text("${day}\n${week}",style: TextStyle(fontSize: 20, color: Colors.black)
+                        )
                       )
-                    )
+                    ),
                   )
                 );
               }),
@@ -137,7 +179,7 @@ class _TimeTableState extends State<TimeTable>{
               children: List.generate(saved[selectWeekIndex].length, (int generateClassIndex) {
                 Map selectMap = saved[selectWeekIndex][generateClassIndex];
                 return ClassCard(
-                  name : selectMap["name"]+"$timetest",
+                  name : selectMap["name"],//+"$timetest",
                   teacher : selectMap["teacher"],
                   tag : selectMap["tag"],
                   start : selectMap["start"],
@@ -147,20 +189,9 @@ class _TimeTableState extends State<TimeTable>{
                     final result = entry.value.where((e)=>e["name"]==selectMap["name"]).map((e)=>{"week":"${weeks[entry.key]}","tag":e["tag"]}).toList();
                     return result;
                   }).toList().expand((element) => element).toList(),
-                  /*  
-                  .entries.toList().map((savedElement){
-                    final index = savedElement.key;
-                    final value = savedElement.value;
-                    final result = value.where((e){
-                      return e["name"]==selectMap["name"];
-                    }).map((e)=>{"week":"$index","tag":e["tag"]});
-                    return result;
-                  }).toList().map((e) => e.toList()).toList().expand((e) => e).toList(),//.expand((element) => null)
-                  */
-                  //[{"week":"월","tag":"1교시"},{"week":"수","tag":"3교시"},{"week":"금","tag":"2교시"}],//saved,//.expand((element) => element).where((element) => element["name"]==selectMap["name"]).toList(),
                   startClassIndex : startClassIndex,
                   endClassIndex : endClassIndex,
-                  isActive : generateClassIndex == endClassIndex,
+                  isActive : (generateClassIndex == endClassIndex)&(activeWeekindex == selectWeekIndex),
                   onTap : (){},
                 );
               }),
@@ -173,6 +204,10 @@ class _TimeTableState extends State<TimeTable>{
 }
 
 class Myfunc{
+  String twoDigits(int n) => n.toString().padLeft(2, "0");
+  String timeToStr(List<int> timeList){
+    return "${twoDigits(timeList[0])}:${twoDigits(timeList[1])}:${twoDigits(timeList[2])}";
+  }
   Map diffDuration(DateTime now, List<int> target) {
     //DateTime now = DateTime.now();
     int hour = target[0];
@@ -180,15 +215,16 @@ class Myfunc{
     int sec = target[2];
     DateTime targetTime = DateTime(now.year, now.month, now.day, hour, min, sec);
     Duration remainDuration = targetTime.difference(now);
-    String twoDigits(int n) => n.toString().padLeft(2, "0");
-    String twoDigitHours = twoDigits(remainDuration.inHours.abs());
-    String twoDigitMinutes = twoDigits(remainDuration.inMinutes.remainder(60).abs());
-    String twoDigitSeconds = twoDigits(remainDuration.inSeconds.remainder(60).abs());
+    String text = timeToStr([remainDuration.inHours.abs(),remainDuration.inMinutes.remainder(60).abs(),remainDuration.inSeconds.remainder(60).abs()]);
+    //String twoDigitHours = twoDigits();
+    //String twoDigitMinutes = twoDigits();
+    //String twoDigitSeconds = twoDigits();
     // +  : 앞으로 있을 내용
     // -0 : 지나간 내용
     bool isNext = remainDuration.inMicroseconds > 0;
+    print(text);
     return {
-      "text" : "$twoDigitHours:$twoDigitMinutes:$twoDigitSeconds",
+      "text" : text,
       "isNext" : isNext
     };
   }
@@ -225,7 +261,7 @@ class ClassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    
     bool isStart = startClassIndex==endClassIndex;
 
     double elevation = isActive!?2:0;
@@ -233,9 +269,9 @@ class ClassCard extends StatelessWidget {
     Color background = isActive!?Colors.grey[200]!:Colors.grey[300]!;
     Color borderColor = isActive!?Colors.blue:Colors.grey;
     Color nameColor = isActive!?Colors.blue:Colors.grey;
-    Color timeColor = isActive!?(isStart?Colors.amber:Colors.blue):Colors.grey;
+    Color timeColor = isActive!?(isStart?Colors.blueGrey:Colors.blue):Colors.grey;
 
-    print("${otherClass![0].runtimeType} : ${otherClass!}");
+    //print("${otherClass![0].runtimeType} : ${otherClass!}");
     return GestureDetector(
       onTap: (){
         onTap;
@@ -271,7 +307,7 @@ class ClassCard extends StatelessWidget {
 
                   TableRow(children: [
                     Text("${teacher}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.start),
-                    Text("${tag} : ${start!.join(":")}~${end!.join(":")}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.end),
+                    Text("${tag} : ${Myfunc().timeToStr(start!)}~${Myfunc().timeToStr(end!)}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.end),
                   ])
                 ],
               ),
