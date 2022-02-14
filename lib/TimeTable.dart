@@ -77,7 +77,7 @@ class _TimeTableState extends State<TimeTable>{
           selectWeekIndex = today.add(Duration(days: selectDayIndex)).weekday-1;
           startClassIndex = saved[selectWeekIndex].indexWhere( (e)=>Myfunc().diffDuration(today,e["start"])["isNext"]==true );
           endClassIndex = saved[selectWeekIndex].indexWhere(  (e)=>Myfunc().diffDuration(today,e["end"])["isNext"]==true );
-          print("$startClassIndex : $endClassIndex :: ${saved[selectWeekIndex].indexWhere( (e)=> Myfunc().diffDuration(today,e["start"])["isNext"]==true )}");
+          //print("$startClassIndex : $endClassIndex :: ${saved[selectWeekIndex].indexWhere( (e)=> Myfunc().diffDuration(today,e["start"])["isNext"]==true )}");
           timetest++;
         });
       });
@@ -144,7 +144,7 @@ class _TimeTableState extends State<TimeTable>{
               children: List.generate(14, (int generateIndex) {
                 int index = generateIndex-2;
                 int day = today.add(Duration(days: index)).day;
-                String week = weeks[today.add(Duration(days: index)).weekday-1];
+                int weekIndex = today.add(Duration(days: index)).weekday-1;
                 return Container(
                   margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
                   width: 70,
@@ -155,6 +155,41 @@ class _TimeTableState extends State<TimeTable>{
                         selectDayIndex=index;
                       });;
                     },
+                    onLongPress: (){
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Dialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10.0)
+                            ),
+                            child: Container(
+                              height: 500,
+                              padding: EdgeInsets.all(10),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                  "${weeks[weekIndex]}요일\n",
+                                  style: TextStyle(
+                                    fontSize: 30, 
+                                    color: Colors.black87, 
+                                    fontWeight: FontWeight.bold, 
+                                    letterSpacing: 2.0
+                                  )),
+                                  Text("Tag:"),
+                                  TextField(
+                                    decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        hintText: 'What do you want to remember?'),
+                                  ),
+                                ],
+                              )
+                            )
+                          );
+                        });
+                    },
                     child: Card(
                       shape: RoundedRectangleBorder(
                         side: new BorderSide(color: activeDayindex==index?Colors.blue:(selectDayIndex==index?Colors.amber:Colors.grey), width: 2.0),
@@ -163,7 +198,7 @@ class _TimeTableState extends State<TimeTable>{
                       color: activeDayindex==index?Colors.blue[300]:(selectDayIndex==index?Colors.amber[300]:Colors.grey[300]),
                       child: Container(
                         alignment: Alignment.center,
-                        child: Text("${day}\n${week}",style: TextStyle(fontSize: 20, color: Colors.black)
+                        child: Text("${day}\n${weeks[weekIndex]}",style: TextStyle(fontSize: 20, color: Colors.black)
                         )
                       )
                     ),
@@ -222,13 +257,14 @@ class Myfunc{
     // +  : 앞으로 있을 내용
     // -0 : 지나간 내용
     bool isNext = remainDuration.inMicroseconds > 0;
-    print(text);
+    //print(text);
     return {
       "text" : text,
       "isNext" : isNext
     };
   }
 }
+
 
 class ClassCard extends StatelessWidget {
   const ClassCard({
@@ -299,9 +335,10 @@ class ClassCard extends StatelessWidget {
                         fontSize: 30, 
                         color: nameColor, 
                         fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0),
-                      textAlign: TextAlign.start,
+                        letterSpacing: 2.0
                       ),
+                      textAlign: TextAlign.start,
+                    ),
                     Text(timeText,style: TextStyle(fontSize: 25, color: timeColor),textAlign: TextAlign.end)
                   ]),
 
