@@ -18,6 +18,7 @@ class _TimeTableState extends State<TimeTable>{
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
       {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
       {"tag":"3교시","start":[20,00,00],"end":[21,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
+      {"tag":"4교시","start":[21,40,00],"end":[22,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
     ],
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
@@ -194,18 +195,84 @@ class ClassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    bool isStart = startClassIndex==endClassIndex;
+
+    double elevation = isActive!?2:0;
+    String timeText = isActive!?Myfunc().diffDuration(today!,isStart?start!:end!)["text"]:tag;
+    Color background = isActive!?Colors.grey[200]!:Colors.grey[300]!;
+    Color borderColor = isActive!?Colors.blue:Colors.grey;
+    Color nameColor = isActive!?Colors.blue:Colors.grey;
+    Color timeColor = isActive!?(isStart?Colors.amber:Colors.blue):Colors.grey;
+
     print(today);
     return GestureDetector(
-      child: Row(
-        children: <Widget>[
-          Text(name!+"//"),
-          Text(teacher!+"//"),
-          Text(tag!+"//"),
-          Text("${start!}"+"//"),
-          Text("${end!}"+"//"),
-          Text("${isActive!}"+"//"),
-          Text("${Myfunc().diffDuration(today!,(startClassIndex==endClassIndex)?(start!):(end!))["text"]}"+"//"),
-        ],
+      onTap: (){
+        onTap;
+      },
+      child: Card(
+        shape: RoundedRectangleBorder(
+          side: new BorderSide(color: borderColor, width: 2.0),
+          borderRadius: BorderRadius.circular(4.0)
+        ),
+        elevation: elevation,
+        color: background,
+        margin: EdgeInsets.fromLTRB(15, 10, 15, 0),
+        child: Container(
+          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+          child: Column(
+            children: <Widget>[
+              Table(
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                border: TableBorder.all(style: BorderStyle.none),
+                children: [
+                  TableRow(children: [
+                    Text(
+                      name!,
+                      style: TextStyle(
+                        fontSize: 30, 
+                        color: nameColor, 
+                        fontWeight: FontWeight.bold, 
+                        letterSpacing: 2.0),
+                      textAlign: TextAlign.start,
+                      ),
+                    Text(timeText,style: TextStyle(fontSize: 25, color: timeColor),textAlign: TextAlign.end)
+                  ]),
+
+                  TableRow(children: [
+                    Text("${teacher}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.start),
+                    Text("${tag} : ${start!.join(":")}~${end!.join(":")}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.end),
+                  ])
+                ],
+              ),
+              isActive!?Container(
+              height: 60, //margin값 + size값
+              //height: 70, -> 리스트뷰 전체의 길이 조절
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: List.generate(10, (int index) {
+                  return Container(
+                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    width: 50,
+                    height: 50,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        side: new BorderSide(color: borderColor, width: 2.0),
+                        borderRadius: BorderRadius.circular(4.0)
+                      ),
+                      color: Colors.greenAccent,
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: Text("월\n${index}",style: TextStyle(fontSize: 15, color: Colors.black),textAlign: TextAlign.center,
+                      ))
+                    ),
+                  );
+                }),
+              ),
+            ):Text("")
+            ],
+          )
+        ),
       ),
     );
   }
