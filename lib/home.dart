@@ -137,6 +137,10 @@ String to int : https://medium.com/ariel-mejia-dev/replace-string-in-flutter-c7a
   ㄴ int.parse("123")
 Replace : https://medium.com/ariel-mejia-dev/replace-string-in-flutter-c7ad5935542b
   ㄴ replaceall :특정문자열에 있는 모든 특정 글자를 변경
+time.add : https://stackoverflow.com/questions/54792056/add-subtract-months-years-to-date-in-dart
+  ㄴ 시간 연산
+Custom Widget : https://www.geeksforgeeks.org/flutter-custom-widgets/
+  ㄴ 커스텀 위젯 추가
 /*
 -----------------------------------------------------------------------------------------
 [ 
