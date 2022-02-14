@@ -129,7 +129,7 @@ CardBorder : https://stackoverflow.com/questions/50783354/how-to-highlight-the-b
   ㄴ 카드 테두리 생성
 Time : https://eunjin3786.tistory.com/285
   ㄴ 시간제어
-매서드 : https://velog.io/@realryankim/DartFlutter-%EC%9C%A0%EC%9A%A9%ED%95%9C-%EB%A9%94%EC%84%9C%EB%93%9C-%ED%95%A8%EC%88%98-%EC%A0%95%EB%A6%AC
+iterable매서드 : https://velog.io/@realryankim/DartFlutter-%EC%9C%A0%EC%9A%A9%ED%95%9C-%EB%A9%94%EC%84%9C%EB%93%9C-%ED%95%A8%EC%88%98-%EC%A0%95%EB%A6%AC
   ㄴ 여러기능
 String의 여러매서드 : https://gadfactory.tistory.com/117
   ㄴ padLeft사용해서 빈칸 채움

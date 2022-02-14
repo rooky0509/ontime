@@ -19,10 +19,12 @@ class _TimeTableState extends State<TimeTable>{
       {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
       {"tag":"3교시","start":[20,00,00],"end":[21,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
       {"tag":"4교시","start":[21,40,00],"end":[22,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
+      {"tag":"5교시","start":[22,40,00],"end":[23,30,00],"name":"과학","teacher":"ㅇㅇㅇ"},
+      {"tag":"4교시","start":[23,40,00],"end":[23,50,00],"name":"수학","teacher":"ㅇㅇㅇ"},
     ],
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
-      {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
+      {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"과학","teacher":"ㅇㅇㅇ"},
     ],
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
@@ -53,6 +55,7 @@ class _TimeTableState extends State<TimeTable>{
   int activeWeekindex = 0;    // activeDayIndex != today.days()
   int selectDayIndex = 0;     //select => 사용자가 임의로 선택한 값
   int selectWeekIndex = 0;
+  List<String> weeks = ["월","화","수","목","금","토","일",];
   //값 지정
   //값 지정
 
@@ -103,14 +106,24 @@ class _TimeTableState extends State<TimeTable>{
             //height: 70, -> 리스트뷰 전체의 길이 조절
             child: ListView(
               scrollDirection: Axis.vertical,
-              children: List.generate(10, (int index) {
-                return Card(
-                  color: Colors.blue[((index-9*2).abs()-9).abs() * 100],
-                  child: Container(
-                    //width: 100.0, -> 상관없음
-                    height: 70.0,
-                    child : Center(
-                      child: Text("${index+20}\n월",style: TextStyle(fontSize: 20, color: Colors.black)),
+              children: List.generate(14, (int generateIndex) {
+                int index = generateIndex-2;
+                int day = today.add(Duration(days: index)).day;
+                String week = weeks[today.add(Duration(days: index)).weekday-1];
+                return GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      selectDayIndex=index;
+                    });;
+                  },
+                  child: Card(
+                    color: activeDayindex==index?Colors.blue:(selectDayIndex==index?Colors.amber:Colors.grey),
+                    child: Container(
+                      //width: 100.0, -> 상관없음
+                      height: 70.0,
+                      child : Center(
+                        child: Text("${day}\n${week}",style: TextStyle(fontSize: 20, color: Colors.black)),
+                      )
                     )
                   )
                 );
@@ -121,8 +134,8 @@ class _TimeTableState extends State<TimeTable>{
             flex: 1,
             child: ListView(
               scrollDirection: Axis.vertical,
-              children: List.generate(saved[selectWeekIndex].length, (int index) {
-                Map selectMap = saved[selectWeekIndex][index];
+              children: List.generate(saved[selectWeekIndex].length, (int generateClassIndex) {
+                Map selectMap = saved[selectWeekIndex][generateClassIndex];
                 return ClassCard(
                   name : selectMap["name"]+"$timetest",
                   teacher : selectMap["teacher"],
@@ -130,9 +143,24 @@ class _TimeTableState extends State<TimeTable>{
                   start : selectMap["start"],
                   end: selectMap["end"],
                   today : today,
+                  otherClass : saved.asMap().entries.map((entry){
+                    final result = entry.value.where((e)=>e["name"]==selectMap["name"]).map((e)=>{"week":"${weeks[entry.key]}","tag":e["tag"]}).toList();
+                    return result;
+                  }).toList().expand((element) => element).toList(),
+                  /*  
+                  .entries.toList().map((savedElement){
+                    final index = savedElement.key;
+                    final value = savedElement.value;
+                    final result = value.where((e){
+                      return e["name"]==selectMap["name"];
+                    }).map((e)=>{"week":"$index","tag":e["tag"]});
+                    return result;
+                  }).toList().map((e) => e.toList()).toList().expand((e) => e).toList(),//.expand((element) => null)
+                  */
+                  //[{"week":"월","tag":"1교시"},{"week":"수","tag":"3교시"},{"week":"금","tag":"2교시"}],//saved,//.expand((element) => element).where((element) => element["name"]==selectMap["name"]).toList(),
                   startClassIndex : startClassIndex,
                   endClassIndex : endClassIndex,
-                  isActive : index == endClassIndex,
+                  isActive : generateClassIndex == endClassIndex,
                   onTap : (){},
                 );
               }),
@@ -175,6 +203,7 @@ class ClassCard extends StatelessWidget {
     this.start,
     this.end,
     this.today,
+    this.otherClass,
     this.startClassIndex,
     this.endClassIndex,
     this.isActive,
@@ -187,6 +216,7 @@ class ClassCard extends StatelessWidget {
   final List<int>? start;
   final List<int>? end;
   final DateTime? today;
+  final List? otherClass;
   
   final int? startClassIndex;
   final int? endClassIndex;
@@ -205,7 +235,7 @@ class ClassCard extends StatelessWidget {
     Color nameColor = isActive!?Colors.blue:Colors.grey;
     Color timeColor = isActive!?(isStart?Colors.amber:Colors.blue):Colors.grey;
 
-    print(today);
+    print("${otherClass![0].runtimeType} : ${otherClass!}");
     return GestureDetector(
       onTap: (){
         onTap;
@@ -246,15 +276,17 @@ class ClassCard extends StatelessWidget {
                 ],
               ),
               isActive!?Container(
-              height: 60, //margin값 + size값
+              height: 65, //margin값 + size값
               //height: 70, -> 리스트뷰 전체의 길이 조절
               child: ListView(
                 scrollDirection: Axis.horizontal,
-                children: List.generate(10, (int index) {
-                  return Container(
+
+
+                children: otherClass!.map((e) => 
+                  Container(
                     margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    width: 50,
-                    height: 50,
+                    width: 55,
+                    height: 55,
                     child: Card(
                       shape: RoundedRectangleBorder(
                         side: new BorderSide(color: borderColor, width: 2.0),
@@ -263,11 +295,13 @@ class ClassCard extends StatelessWidget {
                       color: Colors.greenAccent,
                       child: Container(
                         alignment: Alignment.center,
-                        child: Text("월\n${index}",style: TextStyle(fontSize: 15, color: Colors.black),textAlign: TextAlign.center,
+                        child: Text("${e["week"]}\n${e["tag"]}",style: TextStyle(fontSize: 15, color: Colors.black),textAlign: TextAlign.center,
                       ))
                     ),
-                  );
-                }),
+                  ),
+                ).toList(),
+
+
               ),
             ):Text("")
             ],
