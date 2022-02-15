@@ -147,8 +147,9 @@ Custom Dialog : https://medium.com/codechai/flutter-alert-dialog-to-custom-dialo
 Dragable & DragTarget : https://ichi.pro/ko/flutterui-draggable-mich-dragtarget-e-daehan-simcheung-bunseog-79684963856868
     https://stackoverflow.com/questions/62984685/how-to-specify-drag-target-for-a-certain-widget-flutter-single-draggable-being
     https://medium.flutterdevs.com/draggable-and-drag-target-in-flutter-2513ea7c09f2
-  ㄴ dragable : data(값), child: 처음값, feedback: 드래그중일때 가지고있는 값, childWhenDragging: 드래그중일때 처음부분에 있는 값
-  
+  ㄴ Dragable : data(값), child(처음값), feedback(드래그중일때 가지고있는 값), childWhenDragging(드래그중일때 처음부분에 있는 값)
+  ㄴ DragTarget : builder(보이는값), onAccept(드래그 끝날때), onWillAccept(드래그중일때)
+
 /*
 -----------------------------------------------------------------------------------------
 [ 
