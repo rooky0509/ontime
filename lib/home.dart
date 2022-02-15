@@ -141,7 +141,14 @@ time.add : https://stackoverflow.com/questions/54792056/add-subtract-months-year
   ㄴ 시간 연산
 Custom Widget : https://www.geeksforgeeks.org/flutter-custom-widgets/
   ㄴ 커스텀 위젯 추가
-
+Custom Dialog : https://medium.com/codechai/flutter-alert-dialog-to-custom-dialog-966195157da8
+  ㄴ 커스텀 다이얼로그 생성
+    -> row 사용시 에러남
+Dragable & DragTarget : https://ichi.pro/ko/flutterui-draggable-mich-dragtarget-e-daehan-simcheung-bunseog-79684963856868
+    https://stackoverflow.com/questions/62984685/how-to-specify-drag-target-for-a-certain-widget-flutter-single-draggable-being
+    https://medium.flutterdevs.com/draggable-and-drag-target-in-flutter-2513ea7c09f2
+  ㄴ dragable : data(값), child: 처음값, feedback: 드래그중일때 가지고있는 값, childWhenDragging: 드래그중일때 처음부분에 있는 값
+  
 /*
 -----------------------------------------------------------------------------------------
 [ 

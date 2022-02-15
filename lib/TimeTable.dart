@@ -25,6 +25,7 @@ class _TimeTableState extends State<TimeTable>{
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
       {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"과학","teacher":"ㅇㅇㅇ"},
+      {"tag":"3교시","start":[13,40,00],"end":[15,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
     ],
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
@@ -213,21 +214,89 @@ class _TimeTableState extends State<TimeTable>{
               scrollDirection: Axis.vertical,
               children: List.generate(saved[selectWeekIndex].length, (int generateClassIndex) {
                 Map selectMap = saved[selectWeekIndex][generateClassIndex];
-                return ClassCard(
-                  name : selectMap["name"],//+"$timetest",
-                  teacher : selectMap["teacher"],
-                  tag : selectMap["tag"],
-                  start : selectMap["start"],
-                  end: selectMap["end"],
-                  today : today,
-                  otherClass : saved.asMap().entries.map((entry){
-                    final result = entry.value.where((e)=>e["name"]==selectMap["name"]).map((e)=>{"week":"${weeks[entry.key]}","tag":e["tag"]}).toList();
-                    return result;
-                  }).toList().expand((element) => element).toList(),
-                  startClassIndex : startClassIndex,
-                  endClassIndex : endClassIndex,
-                  isActive : (generateClassIndex == endClassIndex)&(activeWeekindex == selectWeekIndex),
-                  onTap : (){},
+                ClassCard classCard = ClassCard(
+                    name : selectMap["name"],//+"$timetest",
+                    teacher : selectMap["teacher"],
+                    tag : selectMap["tag"],
+                    start : selectMap["start"],
+                    end: selectMap["end"],
+                    today : today,
+                    otherClass : saved.asMap().entries.map((entry){
+                      final result = entry.value.where((e)=>e["name"]==selectMap["name"]).map((e)=>{"week":"${weeks[entry.key]}","tag":e["tag"]}).toList();
+                      return result;
+                    }).toList().expand((element) => element).toList(),
+                    startClassIndex : startClassIndex,
+                    endClassIndex : endClassIndex,
+                    isActive : (generateClassIndex == endClassIndex)&(activeWeekindex == selectWeekIndex),
+                    onTap : (){
+                      
+                    },
+                  );
+                bool accepted = false;
+                return LongPressDraggable(
+                  childWhenDragging: Container(
+                    height: 70,
+                    child: Row(
+                      children: <Widget>[
+                        
+                        Expanded(
+                          child: DragTarget(
+                            builder: (BuildContext context, List<dynamic> candidateData, rejectedData) {
+                              return Container(
+                                  margin: EdgeInsets.fromLTRB(17,0,0,0),
+                                  color: Colors.red,
+                                  child: Text("del", style: TextStyle(color: Colors.white, fontSize: 22.0),
+                                )
+                              );
+                            },
+                            onAccept: (data) {
+                              print("del");
+                            },
+                          ),
+                        ),
+                        Expanded(
+                          child: DragTarget(
+                            builder: (BuildContext context, List<dynamic> candidateData, rejectedData) {
+                              return Container(
+                                  margin: EdgeInsets.fromLTRB(0,0,17,0),
+                                  color: Colors.green,
+                                  child: Text("edit", style: TextStyle(color: Colors.white, fontSize: 22.0),
+                                )
+                              );
+                            },
+                            onAccept: (data) {
+                              print("edit");
+                            },
+                          ),
+                        ),
+
+
+                     /*   
+                DragTarget(
+                    onAccept: (LottieBuilder animation) {
+                      setState(() {
+                        caughtAnimations[2] = animation;
+                      });
+                    },
+                    builder: (BuildContext context, List<dynamic> candidateData, List<dynamic> rejectedData) {
+                      return Center(
+                        child: Container(
+                          height: 60,
+                          width: 60,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade400.withOpacity(0.5), borderRadius: BorderRadius.circular(20.0)),
+                          child: caughtAnimations[2],
+                        ),
+                      );
+                    },
+                  ),
+*/
+
+                      ],
+                    ),
+                  ),
+                  child : classCard,
+                  feedback: classCard,
                 );
               }),
             ),
@@ -321,6 +390,7 @@ class ClassCard extends StatelessWidget {
         color: background,
         margin: EdgeInsets.fromLTRB(15, 10, 15, 0),
         child: Container(
+          width: 200,
           padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
           child: Column(
             children: <Widget>[
