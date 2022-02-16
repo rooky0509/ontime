@@ -149,6 +149,12 @@ Dragable & DragTarget : https://ichi.pro/ko/flutterui-draggable-mich-dragtarget-
     https://medium.flutterdevs.com/draggable-and-drag-target-in-flutter-2513ea7c09f2
   ㄴ Dragable : data(값), child(처음값), feedback(드래그중일때 가지고있는 값), childWhenDragging(드래그중일때 처음부분에 있는 값)
   ㄴ DragTarget : builder(보이는값), onAccept(드래그 끝날때), onWillAccept(드래그중일때)
+Dialog Design : https://stackoverflow.com/questions/56815588/alignment-of-content-inside-dialog-in-flutter
+  ㄴ 약간수정
+Textfield : https://stackoverflow.com/questions/55505327/flutter-how-to-make-textfield-width-fit-its-text-wrap-content
+  ㄴ 최대치 지정이 문제임
+TextFormField : https://blog.codefactory.ai/flutter/form/
+  ㄴ 값 지정 및 변경은 이걸로 해결
 
 /*
 -----------------------------------------------------------------------------------------

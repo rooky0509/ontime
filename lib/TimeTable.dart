@@ -9,9 +9,9 @@ class TimeTable extends StatefulWidget{
   _TimeTableState createState() => _TimeTableState();
 }
 
-class _TimeTableState extends State<TimeTable>{
+class _TimeTableState extends State<TimeTable> {
 
-
+  
 
   List saved = [
     [
@@ -29,7 +29,11 @@ class _TimeTableState extends State<TimeTable>{
     ],
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
-      {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"수학","teacher":"ㅇㅇㅇ"},
+      {"tag":"2교시","start":[09,40,00],"end":[10,30,00],"name":"사회","teacher":"ㅇㅇㅇ"},
+      {"tag":"3교시","start":[20,00,00],"end":[21,30,00],"name":"기술","teacher":"ㅇㅇㅇ"},
+      {"tag":"4교시","start":[21,40,00],"end":[22,30,00],"name":"영어","teacher":"ㅇㅇㅇ"},
+      {"tag":"5교시","start":[22,40,00],"end":[23,30,00],"name":"과학","teacher":"ㅇㅇㅇ"},
+      {"tag":"4교시","start":[23,40,00],"end":[23,50,00],"name":"수학","teacher":"ㅇㅇㅇ"},
     ],
     [
       {"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
@@ -76,14 +80,71 @@ class _TimeTableState extends State<TimeTable>{
           //weekindex = today.weekday-1;
           activeWeekindex = today.weekday-1;
           selectWeekIndex = today.add(Duration(days: selectDayIndex)).weekday-1;
-          startClassIndex = saved[selectWeekIndex].indexWhere( (e)=>Myfunc().diffDuration(today,e["start"])["isNext"]==true );
-          endClassIndex = saved[selectWeekIndex].indexWhere(  (e)=>Myfunc().diffDuration(today,e["end"])["isNext"]==true );
-          //print("$startClassIndex : $endClassIndex :: ${saved[selectWeekIndex].indexWhere( (e)=> Myfunc().diffDuration(today,e["start"])["isNext"]==true )}");
+          startClassIndex = saved[selectWeekIndex].indexWhere( (e)=>Mf().diffDuration(today,e["start"])["isNext"]==true );
+          endClassIndex = saved[selectWeekIndex].indexWhere(  (e)=>Mf().diffDuration(today,e["end"])["isNext"]==true );
+          //print("$startClassIndex : $endClassIndex :: ${saved[selectWeekIndex].indexWhere( (e)=> Mf().diffDuration(today,e["start"])["isNext"]==true )}");
           timetest++;
         });
       });
     }
   
+
+  void EditDialog(
+    BuildContext context,
+    String name,
+    String teacher,
+    String tag,
+    List<int> start,
+    List<int> end,
+  ){
+    final formKey = GlobalKey<FormState>();
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius:  BorderRadius.circular(20.0)
+          ), //this right here
+          child: Form(
+            key: formKey,
+            child: Container(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [ 
+                  Mf().TextEdit(
+                    label: "Name",
+                    hint: name,
+                    onSaved: (val) {},
+                    validator: (val) {
+                      return null;
+                    },
+                  ),
+                  Mf().TextEdit(
+                    label: "Teacher",
+                    hint: teacher,
+                    onSaved: (val) {},
+                    validator: (val) {
+                      return null;
+                    },
+                  ),
+                  Mf().TextEdit(
+                    label: "Tag",
+                    hint: tag,
+                    onSaved: (val) {},
+                    validator: (val) {
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            )
+          )
+        );
+      }
+    );
+  }
+
+
 
   //값 지정
   //값 지정
@@ -100,122 +161,94 @@ class _TimeTableState extends State<TimeTable>{
       appBar: AppBar(
         title: Text('TimeTable'),
       ),
-      body: Row(
-        children: <Widget>[
-          /*
-          Container(
-            width: 75, //margin값 + size값
-            //height: 70, -> 리스트뷰 전체의 길이 조절
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              children: List.generate(14, (int index) {
-                var time = new DateTime.now().subtract(Duration(days: 2));
-                return Container(
-                  margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
-                  width: 70,
-                  height: 70,
-                  child: GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectDayIndex = index;
-                      });
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        side: new BorderSide(color: index == 2 ? Colors.blue : (selectDayIndex == index ? Colors.amber : Colors.grey), width: 2.0),
-                        borderRadius: BorderRadius.circular(4.0)
-                      ),
-                      color: index == 2 ? Colors.blue[300]: (selectDayIndex == index ? Colors.amber[300] : Colors.grey[300]),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text("${time.add(Duration(days:index)).day}\n${weeks[time.add(Duration(days:index)).weekday-1]}",style: TextStyle(fontSize: 20, color: Colors.black)
-                        )
-                      )
-                    ),
-                  )
-                );
-              })
-            ),
-          ),*/
-          Container(
-            width: 75,
-            //height: 70, -> 리스트뷰 전체의 길이 조절
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              children: List.generate(14, (int generateIndex) {
-                int index = generateIndex-2;
-                int day = today.add(Duration(days: index)).day;
-                int weekIndex = today.add(Duration(days: index)).weekday-1;
-                return Container(
-                  margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
-                  width: 70,
-                  height: 70,
-                  child: GestureDetector(
-                    onTap: (){
-                      setState(() {
-                        selectDayIndex=index;
-                      });;
-                    },
-                    onLongPress: (){
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.0)
-                            ),
-                            child: Container(
-                              height: 500,
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                  "${weeks[weekIndex]}요일\n",
-                                  style: TextStyle(
-                                    fontSize: 30, 
-                                    color: Colors.black87, 
-                                    fontWeight: FontWeight.bold, 
-                                    letterSpacing: 2.0
-                                  )),
-                                  Text("Tag:"),
-                                  TextField(
-                                    decoration: InputDecoration(
-                                        border: InputBorder.none,
-                                        hintText: 'What do you want to remember?'),
-                                  ),
-                                ],
-                              )
-                            )
-                          );
+      body: Container(
+        padding: EdgeInsets.fromLTRB(0, 2, 0, 0),
+        child: Row(
+          children: <Widget>[
+            /*
+            Container(
+              width: 75, //margin값 + size값
+              //height: 70, -> 리스트뷰 전체의 길이 조절
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                children: List.generate(14, (int index) {
+                  var time = new DateTime.now().subtract(Duration(days: 2));
+                  return Container(
+                    margin: EdgeInsets.fromLTRB(5, 5, 0, 0),
+                    width: 70,
+                    height: 70,
+                    child: GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          selectDayIndex = index;
                         });
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        side: new BorderSide(color: activeDayindex==index?Colors.blue:(selectDayIndex==index?Colors.amber:Colors.grey), width: 2.0),
-                        borderRadius: BorderRadius.circular(4.0)
-                      ),
-                      color: activeDayindex==index?Colors.blue[300]:(selectDayIndex==index?Colors.amber[300]:Colors.grey[300]),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text("${day}\n${weeks[weekIndex]}",style: TextStyle(fontSize: 20, color: Colors.black)
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          side: new BorderSide(color: index == 2 ? Colors.blue : (selectDayIndex == index ? Colors.amber : Colors.grey), width: 2.0),
+                          borderRadius: BorderRadius.circular(4.0)
+                        ),
+                        color: index == 2 ? Colors.blue[300]: (selectDayIndex == index ? Colors.amber[300] : Colors.grey[300]),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Text("${time.add(Duration(days:index)).day}\n${weeks[time.add(Duration(days:index)).weekday-1]}",style: TextStyle(fontSize: 20, color: Colors.black)
+                          )
                         )
-                      )
-                    ),
-                  )
-                );
-              }),
+                      ),
+                    )
+                  );
+                })
+              ),
+            ),*/
+            Container(
+              width: 80,
+              //height: 70, -> 리스트뷰 전체의 길이 조절
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                children: List.generate(14, (int generateIndex) {
+                  int index = generateIndex-2;
+                  int day = today.add(Duration(days: index)).day;
+                  int weekIndex = today.add(Duration(days: index)).weekday-1;
+                  return Container(
+                    margin: EdgeInsets.fromLTRB(5, 5, 5, 0),
+                    width: 70,
+                    height: 70,
+                    child: GestureDetector(
+                      onTapDown: (TapDownDetails tapDownDetails){
+                        setState(() {
+                          selectDayIndex=index;
+                        });
+                        //print(tapDownDetails);
+                      },
+                      onLongPress: (){
+                        
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          side: new BorderSide(color: activeDayindex==index?Colors.blue:(selectDayIndex==index?Colors.amber:Colors.grey), width: 2.0),
+                          borderRadius: BorderRadius.circular(10)
+                        ),
+                        elevation: selectDayIndex==index?0:10,
+                        color: activeDayindex==index?Colors.blue[300]:(selectDayIndex==index?Colors.amber[300]:Colors.grey[300]),
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: Text("${day}\n${weeks[weekIndex]}",style: TextStyle(fontSize: 20, color: Colors.black)
+                          )
+                        )
+                      ),
+                    )
+                  );
+                }),
+              ),
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: ListView(
-              scrollDirection: Axis.vertical,
-              children: List.generate(saved[selectWeekIndex].length, (int generateClassIndex) {
-                Map selectMap = saved[selectWeekIndex][generateClassIndex];
-                ClassCard classCard = ClassCard(
-                    name : selectMap["name"],//+"$timetest",
+            Expanded(
+              flex: 1,
+              child: ListView(
+                scrollDirection: Axis.vertical,
+                children: List.generate(saved[selectWeekIndex].length, (int generateClassIndex) {
+                  Map selectMap = saved[selectWeekIndex][generateClassIndex];
+                  ClassCard classCard = ClassCard(
+                    name : selectMap["name"]+"$timetest",
                     teacher : selectMap["teacher"],
                     tag : selectMap["tag"],
                     start : selectMap["start"],
@@ -227,87 +260,99 @@ class _TimeTableState extends State<TimeTable>{
                     }).toList().expand((element) => element).toList(),
                     startClassIndex : startClassIndex,
                     endClassIndex : endClassIndex,
+                    width: 10,//MediaQuery.of(context).size.width,
                     isActive : (generateClassIndex == endClassIndex)&(activeWeekindex == selectWeekIndex),
                     onTap : (){
-                      
-                    },
-                  );
-                bool accepted = false;
-                return LongPressDraggable(
-                  childWhenDragging: Container(
-                    height: 70,
-                    child: Row(
-                      children: <Widget>[
-                        
-                        Expanded(
-                          child: DragTarget(
-                            builder: (BuildContext context, List<dynamic> candidateData, rejectedData) {
-                              return Container(
-                                  margin: EdgeInsets.fromLTRB(17,0,0,0),
-                                  color: Colors.red,
-                                  child: Text("del", style: TextStyle(color: Colors.white, fontSize: 22.0),
-                                )
-                              );
-                            },
-                            onAccept: (data) {
-                              print("del");
-                            },
-                          ),
-                        ),
-                        Expanded(
-                          child: DragTarget(
-                            builder: (BuildContext context, List<dynamic> candidateData, rejectedData) {
-                              return Container(
-                                  margin: EdgeInsets.fromLTRB(0,0,17,0),
-                                  color: Colors.green,
-                                  child: Text("edit", style: TextStyle(color: Colors.white, fontSize: 22.0),
-                                )
-                              );
-                            },
-                            onAccept: (data) {
-                              print("edit");
-                            },
-                          ),
-                        ),
-
-
-                     /*   
-                DragTarget(
-                    onAccept: (LottieBuilder animation) {
-                      setState(() {
-                        caughtAnimations[2] = animation;
-                      });
-                    },
-                    builder: (BuildContext context, List<dynamic> candidateData, List<dynamic> rejectedData) {
-                      return Center(
-                        child: Container(
-                          height: 60,
-                          width: 60,
-                          decoration: BoxDecoration(
-                              color: Colors.grey.shade400.withOpacity(0.5), borderRadius: BorderRadius.circular(20.0)),
-                          child: caughtAnimations[2],
-                        ),
+                      EditDialog(
+                        context,
+                        selectMap["name"],
+                        selectMap["teacher"],
+                        selectMap["tag"],
+                        selectMap["start"],
+                        selectMap["end"]
                       );
                     },
-                  ),
-*/
+                  );
+                
+                  return classCard;
+                  /*bool accepted = false;
+                  LongPressDraggable(
+                    childWhenDragging: Container(
+                      height: 70,
+                      child: Row(
+                        children: <Widget>[
+                          
+                          Expanded(
+                            child: DragTarget(
+                              builder: (BuildContext context, List<dynamic> candidateData, rejectedData) {
+                                return Container(
+                                    margin: EdgeInsets.fromLTRB(17,0,0,0),
+                                    color: Colors.red,
+                                    child: Text("del", style: TextStyle(color: Colors.white, fontSize: 22.0),
+                                  )
+                                );
+                              },
+                              onAccept: (data) {
+                                print("del");
+                              },
+                            ),
+                          ),
+                          Expanded(
+                            child: DragTarget(
+                              builder: (BuildContext context, List<dynamic> candidateData, rejectedData) {
+                                return Container(
+                                    margin: EdgeInsets.fromLTRB(0,0,17,0),
+                                    color: Colors.green,
+                                    child: Text("edit", style: TextStyle(color: Colors.white, fontSize: 22.0),
+                                  )
+                                );
+                              },
+                              onAccept: (data) {
+                                print("edit");
+                              },
+                            ),
+                          ),
 
-                      ],
+
+                      //// 
+                  DragTarget(
+                      onAccept: (LottieBuilder animation) {
+                        setState(() {
+                          caughtAnimations[2] = animation;
+                        });
+                      },
+                      builder: (BuildContext context, List<dynamic> candidateData, List<dynamic> rejectedData) {
+                        return Center(
+                          child: Container(
+                            height: 60,
+                            width: 60,
+                            decoration: BoxDecoration(
+                                color: Colors.grey.shade400.withOpacity(0.5), borderRadius: BorderRadius.circular(20.0)),
+                            child: caughtAnimations[2],
+                          ),
+                        );
+                      },
                     ),
-                  ),
-                  child : classCard,
-                  feedback: classCard,
-                );
-              }),
+
+                        ],
+                      ),
+                    ),
+                    child : classCard,
+                    feedback: classCard,
+                  );
+                  */
+                }),
+              ),
             ),
-          ),
-        ],
+          ],
+        )
+      ,
       )
     );
   }
 }
 
-class Myfunc{
+class Mf{
   String twoDigits(int n) => n.toString().padLeft(2, "0");
   String timeToStr(List<int> timeList){
     return "${twoDigits(timeList[0])}:${twoDigits(timeList[1])}:${twoDigits(timeList[2])}";
@@ -332,7 +377,50 @@ class Myfunc{
       "isNext" : isNext
     };
   }
+  
+  TextEdit({
+    required String label,
+    required String hint,
+    required FormFieldSetter onSaved,
+    required FormFieldValidator validator,
+  }) {
+    assert(hint != null);
+    assert(onSaved != null);
+    assert(validator != null);
+
+    return Row(
+      children: [
+        Text(
+          label+" :  ",
+          style: TextStyle(
+            fontSize: 20.0,
+            //fontWeight: FontWeight.w700,
+          ),
+        ),
+        IntrinsicWidth(
+          child: TextFormField(
+            textAlignVertical: TextAlignVertical.center,
+            onSaved: onSaved,
+            validator: validator,
+            style: TextStyle(
+              fontSize: 20.0,
+              //fontWeight: FontWeight.w700,
+            ),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              hintText: hint
+            )
+          ),
+        )
+      ],
+    );
+  }
+
 }
+
+
+/*
+ */
 
 
 class ClassCard extends StatelessWidget {
@@ -347,6 +435,7 @@ class ClassCard extends StatelessWidget {
     this.otherClass,
     this.startClassIndex,
     this.endClassIndex,
+    this.width,
     this.isActive,
     this.onTap,
   }) : super(key: key);
@@ -361,6 +450,7 @@ class ClassCard extends StatelessWidget {
   
   final int? startClassIndex;
   final int? endClassIndex;
+  final double? width;
   final bool? isActive;
   final Function? onTap;
 
@@ -369,8 +459,8 @@ class ClassCard extends StatelessWidget {
     
     bool isStart = startClassIndex==endClassIndex;
 
-    double elevation = isActive!?2:0;
-    String timeText = isActive!?Myfunc().diffDuration(today!,isStart?start!:end!)["text"]:tag;
+    double elevation = isActive!?10:0;
+    String timeText = isActive!?Mf().diffDuration(today!,isStart?start!:end!)["text"]:tag;
     Color background = isActive!?Colors.grey[200]!:Colors.grey[300]!;
     Color borderColor = isActive!?Colors.blue:Colors.grey;
     Color nameColor = isActive!?Colors.blue:Colors.grey;
@@ -378,79 +468,76 @@ class ClassCard extends StatelessWidget {
 
     //print("${otherClass![0].runtimeType} : ${otherClass!}");
     return GestureDetector(
-      onTap: (){
-        onTap;
-      },
-      child: Card(
-        shape: RoundedRectangleBorder(
-          side: new BorderSide(color: borderColor, width: 2.0),
-          borderRadius: BorderRadius.circular(4.0)
-        ),
-        elevation: elevation,
-        color: background,
-        margin: EdgeInsets.fromLTRB(15, 10, 15, 0),
-        child: Container(
-          width: 200,
-          padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-          child: Column(
-            children: <Widget>[
-              Table(
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                border: TableBorder.all(style: BorderStyle.none),
-                children: [
-                  TableRow(children: [
-                    Text(
-                      name!,
-                      style: TextStyle(
-                        fontSize: 30, 
-                        color: nameColor, 
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
-                      textAlign: TextAlign.start,
-                    ),
-                    Text(timeText,style: TextStyle(fontSize: 25, color: timeColor),textAlign: TextAlign.end)
-                  ]),
+            onLongPress: (){
+              onTap!();
+            },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                side: new BorderSide(color: borderColor, width: 2.0),
+                borderRadius: BorderRadius.circular(10.0)
+              ),
+              elevation: elevation,
+              color: background,
+              margin: EdgeInsets.fromLTRB(10, 10, 15, 0),
+              child: Container(
+                padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
+                child: Column(
+                  children: <Widget>[
+                    Table(
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      border: TableBorder.all(style: BorderStyle.none),
+                      children: [
+                        TableRow(children: [
+                          Text(
+                            name!,
+                            style: TextStyle(
+                              fontSize: 30, 
+                              color: nameColor, 
+                              fontWeight: FontWeight.bold, 
+                              letterSpacing: 2.0
+                            ),
+                            textAlign: TextAlign.start,
+                          ),
+                          Text(timeText,style: TextStyle(fontSize: 25, color: timeColor),textAlign: TextAlign.end)
+                        ]),
 
-                  TableRow(children: [
-                    Text("${teacher}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.start),
-                    Text("${tag} : ${Myfunc().timeToStr(start!)}~${Myfunc().timeToStr(end!)}",style: TextStyle(fontSize: 10, color: borderColor),textAlign: TextAlign.end),
-                  ])
+                        TableRow(children: [
+                          Text("${teacher}",style: TextStyle(fontSize: 11, color: borderColor),textAlign: TextAlign.start),
+                          Text("${tag} : ${Mf().timeToStr(start!)}~${Mf().timeToStr(end!)}",style: TextStyle(fontSize: 11, color: borderColor),textAlign: TextAlign.end),
+                        ])
+                      ],
+                    ),
+                    isActive!?
+                      Container(
+                        height: 65, //margin값 + size값
+                        //height: 70, -> 리스트뷰 전체의 길이 조절
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: otherClass!.map((e) => 
+                            Container(
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                              width: 55,
+                              height: 55,
+                              child: Card(
+                                shape: RoundedRectangleBorder(
+                                  side: new BorderSide(color: borderColor, width: 2.0),
+                                  borderRadius: BorderRadius.circular(7.0)
+                                ),
+                                color: Colors.greenAccent,
+                                child: Container(
+                                  alignment: Alignment.center,
+                                  child: Text("${e["week"]}\n${e["tag"]}",style: TextStyle(fontSize: 15, color: Colors.black),textAlign: TextAlign.center,
+                                ))
+                              ),
+                            ),
+                          ).toList(),
+                        ),
+                      ):Container(),
                 ],
-              ),
-              isActive!?Container(
-              height: 65, //margin값 + size값
-              //height: 70, -> 리스트뷰 전체의 길이 조절
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-
-
-                children: otherClass!.map((e) => 
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                    width: 55,
-                    height: 55,
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        side: new BorderSide(color: borderColor, width: 2.0),
-                        borderRadius: BorderRadius.circular(4.0)
-                      ),
-                      color: Colors.greenAccent,
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: Text("${e["week"]}\n${e["tag"]}",style: TextStyle(fontSize: 15, color: Colors.black),textAlign: TextAlign.center,
-                      ))
-                    ),
-                  ),
-                ).toList(),
-
-
-              ),
-            ):Text("")
-            ],
-          )
-        ),
-      ),
-    );
-  }
+              )
+            ),
+          ),
+        );
+  }   
 }
+
