@@ -159,8 +159,12 @@ region : https://marketplace.visualstudio.com/items?itemName=awwsky.regionmarker
   ㄴ # region 생성가능해짐
 Align : https://stackoverflow.com/questions/53716571/how-to-align-single-widgets-in-flutter
   ㄴ 정렬위젯 다루기
+FittedBox : https://stackoverflow.com/questions/54889681/in-flutter-how-to-use-fittedbox-to-resize-text-inside-of-a-row
+  ㄴ TimeTable윗부분 생성
 
 
+
+* https://ppss.kr/archives/154369 * => 디자인
 * https://velog.io/@sangh518/flutter-tips *
 * https://bsscco.github.io/posts/flutter-layout-widgets/ *
   ㄴ 여러 기능들
