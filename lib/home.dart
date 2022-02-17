@@ -157,7 +157,13 @@ TextFormField : https://blog.codefactory.ai/flutter/form/
   ㄴ 값 지정 및 변경은 이걸로 해결
 region : https://marketplace.visualstudio.com/items?itemName=awwsky.regionmarker&ssr=false#qna
   ㄴ # region 생성가능해짐
+Align : https://stackoverflow.com/questions/53716571/how-to-align-single-widgets-in-flutter
+  ㄴ 정렬위젯 다루기
 
+
+* https://velog.io/@sangh518/flutter-tips *
+* https://bsscco.github.io/posts/flutter-layout-widgets/ *
+  ㄴ 여러 기능들
 /*
 -----------------------------------------------------------------------------------------
 [ 
