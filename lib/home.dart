@@ -155,6 +155,8 @@ Textfield : https://stackoverflow.com/questions/55505327/flutter-how-to-make-tex
   ㄴ 최대치 지정이 문제임
 TextFormField : https://blog.codefactory.ai/flutter/form/
   ㄴ 값 지정 및 변경은 이걸로 해결
+region : https://marketplace.visualstudio.com/items?itemName=awwsky.regionmarker&ssr=false#qna
+  ㄴ # region 생성가능해짐
 
 /*
 -----------------------------------------------------------------------------------------
