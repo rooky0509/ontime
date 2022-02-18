@@ -161,7 +161,12 @@ Align : https://stackoverflow.com/questions/53716571/how-to-align-single-widgets
   ㄴ 정렬위젯 다루기
 FittedBox : https://stackoverflow.com/questions/54889681/in-flutter-how-to-use-fittedbox-to-resize-text-inside-of-a-row
   ㄴ TimeTable윗부분 생성
-
+Listview : https://stackoverflow.com/questions/54017508/flutter-auto-vertical-height-in-listview-builder
+  ㄴ  mainAxisSize: MainAxisSize.min 사용 
+    : https://stackoverflow.com/questions/53974288/flutter-listview-bottom-overflow?rq=1
+  ㄴ Expanded 사용
+    : https://knightk.tistory.com/38
+  ㄴ listview.builder 사용
 
 
 * https://ppss.kr/archives/154369 * => 디자인

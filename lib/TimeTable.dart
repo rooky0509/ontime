@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
@@ -21,11 +23,20 @@ class _TimeTableState extends State<TimeTable> {
   }
   */
   int weekActiveIndex = 0;
-  load(int index) async{
-    data[index] = (await saveData.getStringList("cellList_$index")).map((e) => Cell().fromString(e)).toList();
+  void load(int index) async{
+    List<String> fromeSaveList= await saveData.getStringList("cellList_$index");
+    //print(fromeSaveList);
+    data[index] = fromeSaveList.map((e){
+      Cell loadCell = Cell().fromString(e);
+      print("e  :"+e);
+      print(loadCell);
+      return loadCell;
+    }).toList();
   }
-  save(int index) async{
-    saveData.setStringList("cellList_$index", data[index]!.map((e) => e.toString()).toList());
+  void save(int index) async{
+    List<String> toSaveList = data[index]!.map((e) => e.toString()).toList();
+    saveData.setStringList("cellList_$index", toSaveList);
+    //print("${index} =>> cellList_${index} : ${toSaveList}");
   }
   //#endregion
 
@@ -35,17 +46,19 @@ class _TimeTableState extends State<TimeTable> {
   int timerTest = 0;
 
   @override
-  dispose() {
+  void dispose() {
     _timer?.cancel();
     super.dispose();
   }
-  start() {//타이머 시작
+  void start() {//타이머 시작
+    load(0);
+    timerIsPlaying = true;
     _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
       setState(() {
         timerTest++;
         if (timerTest%20 == 0){
           data[0]!.add(Cell());
-          print("${(data[0]??[]).length} =>> saved");
+          //print("${(data[0]??[]).length} =>> saved");
           save(0);
         }
       });
@@ -155,8 +168,6 @@ class _TimeTableState extends State<TimeTable> {
   @override
   Widget build(BuildContext context) {
     if(!timerIsPlaying) {
-      load(0);
-      timerIsPlaying = true;
       start();
     }
     //https://www.youtube.com/watch?v=T4Uehk3_wlY
@@ -165,12 +176,12 @@ class _TimeTableState extends State<TimeTable> {
       children: <Widget>[
         Container(
           color: Colors.amber,
-          padding: EdgeInsets.all(40),
+          padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
           child: topActive(Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
         ),
         Expanded( 
           child : Container(
-            color: Colors.blue,
+            color: Colors.amberAccent,
             padding: EdgeInsets.all(40),
             child: ListView.builder(
               shrinkWrap: true,

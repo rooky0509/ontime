@@ -58,8 +58,8 @@ class Cell {  //1과목
       label : json["label"],
       subject : json["subject"],
       teacher : json["teacher"],
-      start : json["start"],
-      end : json["end"],
+      start : json["start"] as List<int>,
+      end : json["end"] as List<int>,
     );
   }
 }
