@@ -14,24 +14,33 @@ class TimeTable extends StatefulWidget{
 class _TimeTableState extends State<TimeTable> {
 
   //#region value
+  //double height = MediaQuery.of(context).size.height
+  
   SaveData saveData = SaveData();
-  Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};
-  /*
+  Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};  /*
   {
     0:[Cell(),Cell()],
     1:[Cell(),Cell()],
   }
   */
+  DateTime today = DateTime.now();
   int weekActiveIndex = 0;
+  int cellActiveIndex = -1;
+  //bool cellProgress = false;
   void load(int index) async{
     List<String> fromeSaveList= await saveData.getStringList("cellList_$index");
     //print(fromeSaveList);
     data[index] = fromeSaveList.map((e){
+      print("loadStart");
       Cell loadCell = Cell().fromString(e);
-      print("e  :"+e);
-      print(loadCell);
+      //print("e  :"+e);
+      //print(loadCell);
+      print("load---------------${loadCell.label}}");
       return loadCell;
     }).toList();
+    data[index]!.sort((a,b)=> (a.start[0]*360+a.start[1]*60+a.start[2]-b.start[0]*360+b.start[1]*60+b.start[2]) );
+    
+    print("loadEnd");
   }
   void save(int index) async{
     List<String> toSaveList = data[index]!.map((e) => e.toString()).toList();
@@ -51,15 +60,29 @@ class _TimeTableState extends State<TimeTable> {
     super.dispose();
   }
   void start() {//타이머 시작
-    load(0);
-    timerIsPlaying = true;
-    _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
+        today = DateTime.now();
+        weekActiveIndex = 0;//today.weekday-1;
+        /*
+        int cellStartNextIndex = data[weekActiveIndex]!.indexWhere((element){
+          DateTime targetTime = DateTime(today.year, today.month, today.day, element.start[0], element.start[1], element.start[2]);
+          Duration remainDuration = targetTime.difference(today);
+          bool isNext = remainDuration.inMicroseconds > 0;
+          print(isNext);
+          return isNext;
+        });
+        */
+        int cellEndNextIndex = data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"]);
+        cellActiveIndex = cellEndNextIndex;
+        //cellProgress = cellStartNextIndex == cellEndNextIndex;
+        print("cellActiveIndex=$cellActiveIndex // weekActiveIndex=$weekActiveIndex // data[$weekActiveIndex].length=${data[weekActiveIndex]!.length}");
+        
         timerTest++;
         if (timerTest%20 == 0){
-          data[0]!.add(Cell());
+          //data[0]!.add(Cell());
           //print("${(data[0]??[]).length} =>> saved");
-          save(0);
+          //save(0);
         }
       });
     });
@@ -67,11 +90,22 @@ class _TimeTableState extends State<TimeTable> {
   //#endregion
   
   //#region Top widget
-  Widget topActive(Cell cell){
-    return Row(
+  Widget topActive(Cell cell,{bool isMainCell = false}){
+    Map<String,dynamic>? remainTime;
+    bool isStart = false;
+    String start = "--:--:--";
+    String end = "--:--:--";
+    if(isMainCell) {
+      remainTime = cell.remainDuration(today);
+      isStart = remainTime["isStart"];
+      start = remainTime["start"];
+      end = remainTime["end"];
+    }
+    //bool isActive = cell.start
+    return Row(// 4 : 3 : 5
         children: [
           Expanded(
-            flex: 5,
+            flex: 4,
             child: FittedBox(
               alignment: Alignment.centerLeft,
               fit:BoxFit.scaleDown,
@@ -93,7 +127,7 @@ class _TimeTableState extends State<TimeTable> {
                       cell.subject,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 60, 
+                        fontSize: 40, 
                         color: Colors.black54, 
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
@@ -114,7 +148,7 @@ class _TimeTableState extends State<TimeTable> {
               )
             )
           ),
-          Spacer(flex: 1,),
+          Spacer(flex: 3,),
           Expanded(
             flex: 5,
             child: FittedBox(
@@ -124,21 +158,21 @@ class _TimeTableState extends State<TimeTable> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Text(
-                      cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~",
+                    Text( //isMainCell?특정값:기본값
+                      isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):"",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        fontSize: 15, 
-                        color: Colors.black54, 
+                        fontSize: 20, 
+                        color: isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 안보여질 텍스트 -> mainCell을 조건에 넣을 필요가 없음
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
                       ),
                     ),
-                    Text(
-                      cell.start.map((e) => "$e".padLeft(2,"0")).join(":"),
+                    Text( //isMainCell?특정값:기본값//remainTime["isStart"]?끝나기까지남은시간:시작하기까지남은시간
+                      isMainCell?( isStart ? start : end ):(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 60, 
+                        fontSize: 50, 
                         color: Colors.black54, 
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
@@ -148,8 +182,8 @@ class _TimeTableState extends State<TimeTable> {
                       "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        fontSize: 15, 
-                        color: Colors.black54, 
+                        fontSize: 20, 
+                        color: isMainCell&!isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 isStart=false -> mainCell이 아니면 무조건 거짓 -> mainCell을 조건에 넣어야함
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
                       ),
@@ -168,30 +202,79 @@ class _TimeTableState extends State<TimeTable> {
   @override
   Widget build(BuildContext context) {
     if(!timerIsPlaying) {
+      timerIsPlaying = true;
+      load(0);
       start();
     }
     //https://www.youtube.com/watch?v=T4Uehk3_wlY
-    return Column(
+    return Scaffold(
+      body: Column(
       //mainAxisSize: MainAxisSize.min,
       children: <Widget>[
+        cellActiveIndex == -1?
         Container(
           color: Colors.amber,
+          height: MediaQuery.of(context).size.height*0.3,
           padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
-          child: topActive(Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+          child: Text("남은 수업이 없습니다!")//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+        ):
+        Container(
+          color: Colors.amber,
+          height: MediaQuery.of(context).size.height*0.3,
+          padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
+          child: topActive(data[weekActiveIndex]![cellActiveIndex], isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
         ),
         Expanded( 
           child : Container(
             color: Colors.amberAccent,
-            padding: EdgeInsets.all(40),
+            //padding: EdgeInsets.all(40),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount:  data[0]!.length,
-              itemBuilder: (context, index) => topActive(Cell(label: "$index교시")),
+              itemBuilder: (context, index) => 
+              Card(
+                color: index==cellActiveIndex?Colors.amber:Colors.blue,
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(50,20,50,20),
+                  child: topActive(data[0]![index]),//topActive(Cell(label: "$index교시")),
+                )
+              )/*
+              Container(
+                color: index==cellActiveIndex?Colors.green:Colors.blue,
+                padding: EdgeInsets.fromLTRB(50,20,50,10),
+                child: topActive(data[0]![index]),//topActive(Cell(label: "$index교시")),
+              )*/
             ),
           )
         )
       ],
+    ),
+    floatingActionButton: Column(
+      children: <Widget>[
+        Container(
+          height: 30,
+        ),
+        FloatingActionButton(
+      child: Icon(Icons.add),
+      onPressed: (){
+        //saveData.remove('cellList_0');
+        data[0]!.add(Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute+2,today.second],end: [today.hour,today.minute+4,today.second]));
+        save(0);
+        print("addaddadd");
+      },
+    ),
+    FloatingActionButton(
+      child: Icon(Icons.delete),
+      onPressed: (){
+        saveData.remove('cellList_0');
+        load(0);
+        print("removeremoveremove");
+      },
+    ),
+      ],
+    )
     );
+    
   }
   //#endregion
 }

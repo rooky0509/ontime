@@ -25,11 +25,18 @@ class SaveData {
     List<String> result = prefs.getStringList(key) ?? [];
     return result;
   }
+
+
+  void remove(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove(key);
+  }
 }
 
 class Cell {  //1과목
   String label, subject, teacher;
   List<int> start, end;
+  //bool isActive;
   
   Cell({
     this.label = "1교시",
@@ -37,6 +44,7 @@ class Cell {  //1과목
     this.teacher = "ㅇㅇㅇ",
     this.start = const [8,30,0],
     this.end = const [9,20,0],
+    //this.isActive = false,
   });
   
   String toString() => jsonEncode({
@@ -52,16 +60,46 @@ class Cell {  //1과목
     label = json["label"];
     subject = json["subject"];
     teacher = json["teacher"];
-    start = json["start"];
-    end = json["end"];
+    start = json["start"].cast<int>();
+    end = json["end"].cast<int>();
+    //isActive = false;
     return Cell(
-      label : json["label"],
-      subject : json["subject"],
-      teacher : json["teacher"],
-      start : json["start"] as List<int>,
-      end : json["end"] as List<int>,
+      label : label,
+      subject : subject,
+      teacher : teacher,
+      start : start,
+      end : end,
+      //isActive : false,
     );
   }
+
+  Map<String,dynamic> remainDuration(DateTime today){
+    //DateTime now = DateTime.now();
+    int startHour = start[0];
+    int startMin = start[1];
+    int startSec = start[2];
+    DateTime startTime = DateTime(today.year, today.month, today.day, startHour, startMin, startSec);
+    Duration remainToStartDuration = startTime.difference(today);
+    String startRemainText = "${remainToStartDuration.inHours.abs().toString().padLeft(2, "0")}:${remainToStartDuration.inMinutes.remainder(60).abs().toString().padLeft(2, "0")}:${remainToStartDuration.inSeconds.remainder(60).abs().toString().padLeft(2, "0")}";
+
+    int endHour = end[0];
+    int endMin = end[1];
+    int endSec = end[2];
+    DateTime endTime = DateTime(today.year, today.month, today.day, endHour, endMin, endSec);
+    Duration remainToEndDuration = endTime.difference(today);
+    String endRemainText = "${remainToEndDuration.inHours.abs().toString().padLeft(2, "0")}:${remainToEndDuration.inMinutes.remainder(60).abs().toString().padLeft(2, "0")}:${remainToEndDuration.inSeconds.remainder(60).abs().toString().padLeft(2, "0")}";
+    
+    bool isStart = (remainToStartDuration.inMicroseconds > 0) & (remainToEndDuration.inMicroseconds > 0);
+    bool endYet = (remainToEndDuration.inMicroseconds > 0);
+
+    return {
+      "start" : startRemainText,
+      "end" : endRemainText,
+      "isStart" : isStart,
+      "endYet" : endYet,
+    };
+  }
+
 }
 
 /*
