@@ -5,14 +5,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SaveData {
   SaveData();
-  void save(String key, String value) async {
+  void setString(String key, String value) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     //counter = prefs.getInt(key) ?? 0;
     prefs.setString(key, value);
   }
-  Future<String> get(String key) async {
+  Future<String> getString(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String result = prefs.getString(key) ?? "";
+    return result;
+  }
+  void setStringList(String key, List<String> value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //counter = prefs.getInt(key) ?? 0;
+    prefs.setStringList(key, value);
+  }
+  Future<List<String>> getStringList(String key) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> result = prefs.getStringList(key) ?? [];
     return result;
   }
 }

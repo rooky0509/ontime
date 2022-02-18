@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+
+import 'SaveData.dart';
 
 class TimeTable extends StatefulWidget{
   @override
@@ -8,49 +11,63 @@ class TimeTable extends StatefulWidget{
 //{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
 class _TimeTableState extends State<TimeTable> {
 
+  //#region value
+  SaveData saveData = SaveData();
+  Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};
+  /*
+  {
+    0:[Cell(),Cell()],
+    1:[Cell(),Cell()],
+  }
+  */
+  int weekActiveIndex = 0;
+  load(int index) async{
+    data[index] = (await saveData.getStringList("cellList_$index")).map((e) => Cell().fromString(e)).toList();
+  }
+  save(int index) async{
+    saveData.setStringList("cellList_$index", data[index]!.map((e) => e.toString()).toList());
+  }
+  //#endregion
+
   //#region Timer Definition
   Timer? _timer; // 타이머
   bool timerIsPlaying = false; // 시작/정지 상태값
-  int timerTest = 100000000000;
+  int timerTest = 0;
 
   @override
-  void dispose() {
+  dispose() {
     _timer?.cancel();
     super.dispose();
   }
-  void _start() {//타이머 시작
+  start() {//타이머 시작
     _timer = Timer.periodic(Duration(milliseconds: 50), (timer) {
       setState(() {
-        timerTest++;                             //999999999999
-        if (timerTest >= 999999999999) timerTest = 100000000000;
+        timerTest++;
+        if (timerTest%20 == 0){
+          data[0]!.add(Cell());
+          print("${(data[0]??[]).length} =>> saved");
+          save(0);
+        }
       });
     });
   }
   //#endregion
   
-  //#region Widget Build
-  @override
-  Widget build(BuildContext context) {
-    if(!timerIsPlaying) {
-      timerIsPlaying = true;
-      _start();
-    }
-    //https://www.youtube.com/watch?v=T4Uehk3_wlY
-    return Container(
-      padding: EdgeInsets.all(20),
-      child: Row(
+  //#region Top widget
+  Widget topActive(Cell cell){
+    return Row(
         children: [
           Expanded(
-            flex: 3,
+            flex: 5,
             child: FittedBox(
-            fit:BoxFit.scaleDown,
-            child:
-              IntrinsicWidth(
+              alignment: Alignment.centerLeft,
+              fit:BoxFit.scaleDown,
+              child: IntrinsicWidth(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Text(
-                      "1교시",
+                      cell.label,
                       textAlign: TextAlign.left,
                       style: TextStyle(
                         fontSize: 15, 
@@ -60,17 +77,17 @@ class _TimeTableState extends State<TimeTable> {
                       ),
                     ),
                     Text(
-                      "국어${timerTest%1000000000}",
+                      cell.subject,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 50, 
+                        fontSize: 60, 
                         color: Colors.black54, 
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
                       ),
                     ),
                     Text(
-                      "김철수",
+                      cell.teacher,
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 15, 
@@ -86,16 +103,16 @@ class _TimeTableState extends State<TimeTable> {
           ),
           Spacer(flex: 1,),
           Expanded(
-            flex: 3,
+            flex: 5,
             child: FittedBox(
-            fit:BoxFit.scaleDown,
-            child:
-              IntrinsicWidth(
+              alignment: Alignment.centerRight,
+              fit:BoxFit.scaleDown,
+              child: IntrinsicWidth(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
                     Text(
-                      "1교시",
+                      cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~",
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 15, 
@@ -105,17 +122,17 @@ class _TimeTableState extends State<TimeTable> {
                       ),
                     ),
                     Text(
-                      "국어${timerTest}",
+                      cell.start.map((e) => "$e".padLeft(2,"0")).join(":"),
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 50, 
+                        fontSize: 60, 
                         color: Colors.black54, 
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
                       ),
                     ),
                     Text(
-                      "김철수",
+                      "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
                       textAlign: TextAlign.right,
                       style: TextStyle(
                         fontSize: 15, 
@@ -129,9 +146,40 @@ class _TimeTableState extends State<TimeTable> {
               )
             )
           ),
-          
-          ],
-      ),
+        ],
+      );
+  }
+  //#endregion
+
+  //#region Widget Build
+  @override
+  Widget build(BuildContext context) {
+    if(!timerIsPlaying) {
+      load(0);
+      timerIsPlaying = true;
+      start();
+    }
+    //https://www.youtube.com/watch?v=T4Uehk3_wlY
+    return Column(
+      //mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          color: Colors.amber,
+          padding: EdgeInsets.all(40),
+          child: topActive(Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+        ),
+        Expanded( 
+          child : Container(
+            color: Colors.blue,
+            padding: EdgeInsets.all(40),
+            child: ListView.builder(
+              shrinkWrap: true,
+              itemCount:  data[0]!.length,
+              itemBuilder: (context, index) => topActive(Cell(label: "$index교시")),
+            ),
+          )
+        )
+      ],
     );
   }
   //#endregion
