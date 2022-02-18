@@ -119,6 +119,7 @@ Shared Preferences
     : Shared 기본
   ㄴ https://betterprogramming.pub/flutter-how-to-save-objects-in-sharedpreferences-b7880d0ee2e4
     : Custom Object
+    
 */
 
 /*
