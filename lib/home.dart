@@ -167,6 +167,13 @@ Listview : https://stackoverflow.com/questions/54017508/flutter-auto-vertical-he
   ㄴ Expanded 사용
     : https://knightk.tistory.com/38
   ㄴ listview.builder 사용
+List Cast : https://stackoverflow.com/questions/50245187/type-listdynamic-is-not-a-subtype-of-type-listint-where
+  ㄴ (List<dynamic>).cast<int>() 를 사용
+floatingButton : https://stackoverflow.com/questions/55166999/how-to-make-two-floating-action-button-in-flutter
+  ㄴ 테스트용 버튼으로 사용 좋음
+Expanded Error : https://stackoverflow.com/questions/54905388/incorrect-use-of-parent-data-widget-expanded-widgets-must-be-placed-inside-flex
+  ㄴ You should use Expanded only within a Column, Row or Flex //Expanded cannot be used inside a Stack.
+    ㄴ https://otrodevym.tistory.com/entry/Flutter-Incorrect-use-of-ParentDataWidget
 
 
 * https://ppss.kr/archives/154369 * => 디자인
