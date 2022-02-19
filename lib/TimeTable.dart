@@ -28,25 +28,28 @@ class _TimeTableState extends State<TimeTable> {
   int weekActiveIndex = 0;
   int cellActiveIndex = -1;
   //bool cellProgress = false;
-  void load(int index) async{
-    List<String> fromeSaveList= await saveData.getStringList("cellList_$index");
-    //print(fromeSaveList);
-    data[index] = fromeSaveList.map((e){
-      print("loadStart");
+
+  String keyStr(int weekIndex){
+    return "cellList_$weekIndex";
+  }
+  void load(int weekIndex) async{
+    List<String> fromeSaveList= await saveData.getStringList( keyStr(weekIndex) );
+    data[weekIndex] = fromeSaveList.map((e){
       Cell loadCell = Cell().fromString(e);
-      //print("e  :"+e);
-      //print(loadCell);
-      print("load---------------${loadCell.label}}");
       return loadCell;
     }).toList()..sort((a,b)=> a.remainDuration(b.toDateTime(today,type: true))["startYet"]?1:-1 );
-    //data[index]!;
-    
-    print("loadEnd");
   }
-  void save(int index) async{
-    List<String> toSaveList = data[index]!.map((e) => e.toString()).toList();
-    saveData.setStringList("cellList_$index", toSaveList);
-    //print("${index} =>> cellList_${index} : ${toSaveList}");
+  void save(int weekIndex) async{
+    List<String> toSaveList = data[weekIndex]!.map((e) => e.toString()).toList();
+    saveData.setStringList( keyStr(weekIndex) , toSaveList);
+  }
+  void add(int weekIndex, Cell cell) {
+    data[weekIndex]!.add(cell);
+    save(weekIndex);
+  }
+  void clear(int weekIndex) {
+    saveData.remove('cellList_$weekIndex');
+    load(weekIndex);
   }
   //#endregion
 
@@ -287,17 +290,14 @@ class _TimeTableState extends State<TimeTable> {
           child: Icon(Icons.add),
           onPressed: (){
             //saveData.remove('cellList_0');
-            data[0]!.add(Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute,today.second+10],end: [today.hour,today.minute,today.second+20]));
-            save(0);
+            add(0, Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute,today.second+10],end: [today.hour,today.minute,today.second+20]));
             print("addaddadd");
           },
         ),
         FloatingActionButton(
           child: Icon(Icons.delete),
           onPressed: (){
-            saveData.remove('cellList_0');
-            load(0);
-            print("removeremoveremove");
+            clear(0);
           },
         ),
       ],
