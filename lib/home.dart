@@ -174,9 +174,33 @@ floatingButton : https://stackoverflow.com/questions/55166999/how-to-make-two-fl
 Expanded Error : https://stackoverflow.com/questions/54905388/incorrect-use-of-parent-data-widget-expanded-widgets-must-be-placed-inside-flex
   ㄴ You should use Expanded only within a Column, Row or Flex //Expanded cannot be used inside a Stack.
     ㄴ https://otrodevym.tistory.com/entry/Flutter-Incorrect-use-of-ParentDataWidget
+Gradient : https://www.digitalocean.com/community/tutorials/flutter-flutter-gradient
+  ㄴ 그라데이션 적용
+Opacity : https://stackoverflow.com/questions/50590353/how-to-change-the-opacity-of-the-snackbar-in-flutter
+  ㄴ 투명도 적용
+parameter F(F(p) func) : https://stackoverflow.com/questions/43334714/pass-a-typed-function-as-a-parameter-in-dart/43611520
+  ㄴ 함수 파라미터를 함수로 넣을 수 있음
 
+Dialog Editor
+  : https://blog.codefactory.ai/flutter/form/
+    ㄴ TextFormField를 사용한 위젯만들기
+  : https://www.kindacode.com/article/flutter-textfield-width-height-padding/
+    ㄴ TextFormField크기 설정 => BoxConstraints
+  : https://www.codegrepper.com/code-examples/dart/flutter+close+dialog
+    ㄴ Dialog 닫힐때 event
+  : https://stackoverflow.com/questions/52068669/flutter-how-to-use-future-return-value-as-if-variable
+    ㄴ await을 사용하여 저장 => 그 후 저장한것을 return (=> 받는곳은 then)
+
+정규식(Regular Expressions / Regex)
+  : https://medium.com/@originerd/정규-표현식-좀-더-깊이-알아보기-5bd16027e1e0
+    ㄴ 정규표현식에 대하여
+  : https://rubular.com/r/gY8DYYyIEH4OWy
+    ㄴ 정규표현식 테스트
+  : https://tksuns12.github.io/project/sossul-sixth/
+    ㄴ flutter에서의 사용
 
 * https://ppss.kr/archives/154369 * => 디자인
+* https://medium.com/@originerd/정규-표현식-좀-더-깊이-알아보기-5bd16027e1e0 * => 정규식
 * https://velog.io/@sangh518/flutter-tips *
 * https://bsscco.github.io/posts/flutter-layout-widgets/ *
   ㄴ 여러 기능들

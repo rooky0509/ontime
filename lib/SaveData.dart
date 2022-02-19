@@ -107,8 +107,8 @@ class Cell {  //1과목
     bool endYet = (remainToEndDuration.inMicroseconds > 0);
     bool isStart = startYet & endYet;
 
-    print("[$label]$subject : 0$remainToStartDuration -- 0$remainToEndDuration -- $startYet:$endYet");
-    print("[$label]$subject : $startRemainText        -- $endRemainText        -- ${today.millisecond}");
+    //print("[$label]$subject : 0$remainToStartDuration -- 0$remainToEndDuration -- $startYet:$endYet");
+    //print("[$label]$subject : $startRemainText        -- $endRemainText        -- ${today.millisecond}");
     
     return {
       "start" : startRemainText,
@@ -119,6 +119,171 @@ class Cell {  //1과목
     };
   }
 
+  Future<bool> editDialog(BuildContext context) async{
+    final formKey = GlobalKey<FormState>();
+    String? resultLabel, resultSubject, resultTeacher;
+    List<int>? resultStart, resultEnd;
+    //bool validateState = formKey.currentState==null?true:formKey.currentState!.validate(); //yesButton에서만 사용
+    Widget tff({required String label,required initial ,required FormFieldSetter onSaved,required FormFieldValidator validator,}) {
+      Widget widget = TextFormField(
+        textAlignVertical: TextAlignVertical.center,
+        autovalidateMode: AutovalidateMode.always,
+        onSaved: onSaved,  //함수
+        validator: validator,  //함수
+        initialValue: initial,  //박스 안 내용
+        decoration: InputDecoration(  //박스 스타일
+          contentPadding: const EdgeInsets.symmetric(vertical: 25.0, horizontal: 10.0),  //내용패딩
+          
+          labelText: label,  // 라벨
+          helperText: initial,  //박스 밑 내용
+          helperStyle: TextStyle(height: 0.5),
+          errorStyle: TextStyle(height: 0.5),
+          border: OutlineInputBorder(),  //박스 형태
+        ),
+      );
+      return  ConstrainedBox(
+          constraints: const BoxConstraints.tightFor(width: double.infinity),
+          child:Container(color: Colors.blue.withOpacity(0.5), padding: EdgeInsets.all(10),child: widget,),
+      );
+    } 
+    Widget yesButton() {
+      bool validateState = formKey.currentState==null?true:formKey.currentState!.validate();
+      print("yesButton() : formKey.currentState==null : ${formKey.currentState==null}");
+      Widget widget = RaisedButton(
+        color: validateState ? Colors.blue : Colors.grey,
+        onPressed: () async {
+          if (validateState){
+            formKey.currentState!.save();
+            print("formKey.currentState!.validate() == true");
+            label = resultLabel??"LLL";
+            subject = resultSubject??"SSS";
+            teacher = resultTeacher??"TTT";
+            start = resultStart??[0,0,0];
+            end = resultEnd??[9,9,9];
+            print("""
+            label = ${resultLabel!};
+            subject = ${resultSubject!};
+  edit!!    teacher = ${resultTeacher!};
+            start = ${resultStart}!;
+            end = ${resultEnd!};
+            """);
+            print("Navigator.pop(context, true);");
+            Navigator.pop(context, true);
+          }
+        },// validation 이 성공하면 true 가 리턴돼요!  //validation 이 성공하면 폼 저장하기
+        child: Text(
+          '\n저장하기!\n',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ); 
+      return  ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(width: double.infinity),
+        child:Container(color: Colors.amber.withOpacity(0.5), padding: EdgeInsets.all(10),child: widget,),
+      );
+    }
+    Widget noButton() {
+      Widget widget = RaisedButton(
+        color: Colors.red,
+        onPressed: () => Navigator.pop(context, false),
+        child: Text(
+          '\n끄기\n',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
+      ); 
+      return  ConstrainedBox(
+        constraints: const BoxConstraints.tightFor(width: double.infinity),
+        child:Container(color: Colors.red.withOpacity(0.5), padding: EdgeInsets.all(10),child: widget,),
+      );
+    }
+    final result = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),
+          child: Form(
+            key: formKey,
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  tff(
+                    label : "Label",
+                    initial : label,
+                    onSaved : (val) => resultLabel = val,
+                    validator : (val) {
+                      if(val.length < 1) return '필수사항입니다.';
+                      return null;
+                    },
+                  ),
+                  tff(
+                    label : "Subject",
+                    initial : subject,
+                    onSaved : (val) => resultSubject = val,
+                    validator : (val) {
+                      if(val.length < 1) return '필수사항입니다.';
+                      return null;
+                    },
+                  ),
+                  tff(
+                    label : "Teacher",
+                    initial : teacher,
+                    onSaved : (val) => resultTeacher = val,
+                    validator : (val) {
+                      if(val.length < 1) return '필수사항입니다.';
+                      return null;
+                    },
+                  ),
+                  Row(
+                    //mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      
+                      Expanded(child: tff(
+                        label : "Start",
+                        initial : start.map((e) => e.toString().padLeft(2,"0")).join(":"),
+                        onSaved : (val) => resultStart = val.split(":").map((e)=>int.parse(e)).toList().cast<int>(),
+                        validator : (val) { //^\d\d:\d\d:\d\d$
+                          if(!RegExp(r"^\d\d:\d\d:\d\d$").hasMatch(val)) return "00:00:00 형식이 아닙니다.";
+                          else print("00:00:00 형식");
+                          return null;
+                        },
+                      )),
+                  
+                      Expanded(child: tff(
+                        label : "End",
+                        initial : end.map((e) => e.toString().padLeft(2,"0")).join(":"),
+                        onSaved : (val) => resultEnd = val.split(":").map((e)=>int.parse(e)).toList().cast<int>(),
+                        validator : (val) {
+                          if(!RegExp(r"^\d\d:\d\d:\d\d$").hasMatch(val)) return "00:00:00 형식이 아닙니다.";
+                          else print("00:00:00 형식");
+                          return null;
+                        },
+                      )),
+                    ],
+                  ),
+                  Row(
+                    //mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Expanded(child: yesButton()),
+                      Expanded(child: noButton()),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      }
+    ).then((exit){
+      print("Finish!! exxit : $exit");
+      return exit??false;// user pressed Yes button return true
+    });
+    return result;
+  }
 }
 
 /*

@@ -18,16 +18,11 @@ class _TimeTableState extends State<TimeTable> {
   //double height = MediaQuery.of(context).size.height
   
   SaveData saveData = SaveData();
-  Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};  /*
-  {
-    0:[Cell(),Cell()],
-    1:[Cell(),Cell()],
-  }
-  */
+  Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};  //{0:[Cell(),Cell()],1:[Cell(),Cell()],}
+  
   DateTime today = DateTime.now();
   int weekActiveIndex = 0;
   int cellActiveIndex = -1;
-  //bool cellProgress = false;
 
   String keyStr(int weekIndex){
     return "cellList_$weekIndex";
@@ -51,6 +46,7 @@ class _TimeTableState extends State<TimeTable> {
     saveData.remove('cellList_$weekIndex');
     load(weekIndex);
   }
+  
   //#endregion
 
   //#region Timer Definition
@@ -97,7 +93,7 @@ class _TimeTableState extends State<TimeTable> {
   //#endregion
   
   //#region Top widget
-  Widget topActive(Cell cell,{bool isMainCell = false}){
+  Widget topActive(Cell cell, Function(Cell e) func, {bool isMainCell = false}){
     Map<String,dynamic>? remainTime;
     bool isStart = false;
     String start = "--:--:--";
@@ -109,99 +105,107 @@ class _TimeTableState extends State<TimeTable> {
       end = remainTime["end"];
     }
     //bool isActive = cell.start
-    return Row(// 4 : 3 : 5
-        children: [
-          Expanded(
-            flex: 4,
-            child: FittedBox(
-              alignment: Alignment.centerLeft,
-              fit:BoxFit.scaleDown,
-              child: IntrinsicWidth(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      cell.label,
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 15, 
-                        color: Colors.black54, 
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
+
+    Widget widget = Row(// 4 : 3 : 5
+      children: [
+        Expanded(
+          flex: 4,
+          child: FittedBox(
+            alignment: Alignment.centerLeft,
+            fit:BoxFit.scaleDown,
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Text(
+                    cell.label,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 15, 
+                      color: Colors.black54, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0
                     ),
-                    Text(
-                      cell.subject,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 40, 
-                        color: Colors.black54, 
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
+                  ),
+                  Text(
+                    cell.subject,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 40, 
+                      color: Colors.black54, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0
                     ),
-                    Text(
-                      cell.teacher,
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 15, 
-                        color: Colors.black54, 
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
+                  ),
+                  Text(
+                    cell.teacher,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 15, 
+                      color: Colors.black54, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0
                     ),
-                  ],
-                )
+                  ),
+                ],
               )
             )
-          ),
-          Spacer(flex: 3,),
-          Expanded(
-            flex: 5,
-            child: FittedBox(
-              alignment: Alignment.centerRight,
-              fit:BoxFit.scaleDown,
-              child: IntrinsicWidth(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text( //isMainCell?특정값:기본값
-                      isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):"",
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 20, // 시작값
-                        color: isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 안보여질 텍스트 -> mainCell을 조건에 넣을 필요가 없음
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
+          )
+        ),
+        Spacer(flex: 3,),
+        Expanded(
+          flex: 5,
+          child: FittedBox(
+            alignment: Alignment.centerRight,
+            fit:BoxFit.scaleDown,
+            child: IntrinsicWidth(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Text( //isMainCell?특정값:기본값
+                    isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):"",
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 20, // 시작값
+                      color: isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 안보여질 텍스트 -> mainCell을 조건에 넣을 필요가 없음
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0
                     ),
-                    Text( //isMainCell?특정값:기본값//remainTime["isStart"]?끝나기까지남은시간:시작하기까지남은시간
-                      isMainCell?( isStart ? start : end ):(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")),
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 50, 
-                        color: Colors.black54, 
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
+                  ),
+                  Text( //isMainCell?특정값:기본값//remainTime["isStart"]?끝나기까지남은시간:시작하기까지남은시간
+                    isMainCell?( isStart ? start : end ):(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 50, 
+                      color: Colors.black54, 
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0
                     ),
-                    Text(
-                      "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 20, // 끝값
-                        color: isMainCell&!isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 isStart=false -> mainCell이 아니면 무조건 거짓 -> mainCell을 조건에 넣어야함
-                        fontWeight: FontWeight.bold, 
-                        letterSpacing: 2.0
-                      ),
+                  ),
+                  Text(
+                    "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 20, // 끝값
+                      color: isMainCell&!isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 isStart=false -> mainCell이 아니면 무조건 거짓 -> mainCell을 조건에 넣어야함
+                      fontWeight: FontWeight.bold, 
+                      letterSpacing: 2.0
                     ),
-                  ],
-                )
+                  ),
+                ],
               )
             )
-          ),
-        ],
-      );
+          )
+        ),
+      ],
+    );
+    return GestureDetector(
+      onDoubleTap: (){
+        func(cell);
+        print("${cell.label} is Tapped");
+      },
+      child: widget,
+    );
   }
   //#endregion
 
@@ -244,7 +248,12 @@ class _TimeTableState extends State<TimeTable> {
               width: double.infinity,
               height: MediaQuery.of(context).size.height*0.3,
               padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
-              child: topActive(data[weekActiveIndex]![cellActiveIndex], isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+              child: topActive(
+                data[weekActiveIndex]![cellActiveIndex], 
+                (e){
+
+                },
+                isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
             ),
             Positioned(bottom: 0, child: Text(DateFormat.Hms().format(today))),
           ],
@@ -271,7 +280,21 @@ class _TimeTableState extends State<TimeTable> {
                 color: index==cellActiveIndex?Colors.amber:Colors.blue, //리스트카드 색
                 child: Container(
                   padding: EdgeInsets.fromLTRB(50,20,50,20),
-                  child: topActive(data[0]![index]),//topActive(Cell(label: "$index교시")),
+                  child: topActive(
+                    data[0]![index],
+                    (e){
+                      print(e);
+                      e.editDialog(context).then((value){
+                        if(value){
+                          print("[${DateFormat.Hms().format(today)}]Get!! value : $value");
+                          save(0);
+                        }else{
+                          print("GET!! but.. False!");
+                        }
+                      });
+                      //save(0);
+                    }
+                  ),//topActive(Cell(label: "$index교시")),
                 )
               )/*
               Container(
@@ -290,14 +313,39 @@ class _TimeTableState extends State<TimeTable> {
           child: Icon(Icons.add),
           onPressed: (){
             //saveData.remove('cellList_0');
-            add(0, Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute,today.second+10],end: [today.hour,today.minute,today.second+20]));
+            add(0, Cell(
+              label: "$timerTest교시",
+              subject: "기술가정",
+              start: [today.hour,today.minute,today.second+10],
+              end: [today.hour,today.minute,today.second+20]
+            ));
             print("addaddadd");
           },
         ),
         FloatingActionButton(
           child: Icon(Icons.delete),
-          onPressed: (){
+          onPressed: () async{
             clear(0);
+
+
+            /*
+            
+            Cell(
+              label: "$timerTest교시",
+              subject: "기술가정",
+              start: [today.hour,today.minute,today.second+10],
+              end: [today.hour,today.minute,today.second+20]
+            ).editDialog(context).then((value){
+              print("[${DateFormat.Hms().format(today)}]Get!! value : $value");
+              save(0);
+            });
+            
+            EditDialog(context, Cell(
+              label: "$timerTest교시",
+              subject: "기술가정",
+              start: [today.hour,today.minute,today.second+10],
+              end: [today.hour,today.minute,today.second+20]
+            ));*/
           },
         ),
       ],
