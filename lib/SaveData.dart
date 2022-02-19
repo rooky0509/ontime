@@ -73,30 +73,49 @@ class Cell {  //1과목
     );
   }
 
+  DateTime toDateTime(DateTime today, {bool type = true}){
+    today = today.subtract(Duration(milliseconds: today.millisecond));
+    List<int> target = type?start:end;
+    int targetHour = target[0];
+    int targetMin = target[1];
+    int targetSec = target[2];
+    DateTime targetTime = DateTime(today.year, today.month, today.day, targetHour, targetMin, targetSec);
+    return targetTime;
+  }
+
   Map<String,dynamic> remainDuration(DateTime today){
-    //DateTime now = DateTime.now();
+    today = today.subtract(Duration(milliseconds: today.millisecond));
+    /*
     int startHour = start[0];
     int startMin = start[1];
     int startSec = start[2];
     DateTime startTime = DateTime(today.year, today.month, today.day, startHour, startMin, startSec);
-    Duration remainToStartDuration = startTime.difference(today);
+    */
+    Duration remainToStartDuration = toDateTime(today,type:true).difference(today);
+    //DateFormat.Hms().format(remainToStartDuration);
     String startRemainText = "${remainToStartDuration.inHours.abs().toString().padLeft(2, "0")}:${remainToStartDuration.inMinutes.remainder(60).abs().toString().padLeft(2, "0")}:${remainToStartDuration.inSeconds.remainder(60).abs().toString().padLeft(2, "0")}";
-
+    /*
     int endHour = end[0];
     int endMin = end[1];
     int endSec = end[2];
     DateTime endTime = DateTime(today.year, today.month, today.day, endHour, endMin, endSec);
-    Duration remainToEndDuration = endTime.difference(today);
+    */
+    Duration remainToEndDuration = toDateTime(today,type:false).difference(today);
     String endRemainText = "${remainToEndDuration.inHours.abs().toString().padLeft(2, "0")}:${remainToEndDuration.inMinutes.remainder(60).abs().toString().padLeft(2, "0")}:${remainToEndDuration.inSeconds.remainder(60).abs().toString().padLeft(2, "0")}";
     
-    bool isStart = (remainToStartDuration.inMicroseconds > 0) & (remainToEndDuration.inMicroseconds > 0);
+    bool startYet = (remainToStartDuration.inMicroseconds > 0);
     bool endYet = (remainToEndDuration.inMicroseconds > 0);
+    bool isStart = startYet & endYet;
 
+    print("[$label]$subject : 0$remainToStartDuration -- 0$remainToEndDuration -- $startYet:$endYet");
+    print("[$label]$subject : $startRemainText        -- $endRemainText        -- ${today.millisecond}");
+    
     return {
       "start" : startRemainText,
       "end" : endRemainText,
-      "isStart" : isStart,
-      "endYet" : endYet,
+      "startYet" : startYet, //ture : 넣은값이 아직 더 작음 / false : 넣은값이 더 커짐
+      "endYet" : endYet, //ture : 넣은값이 아직 더 작음 / false : 넣은값이 더 커짐
+      "isStart" : isStart, //ture : start< 값 <end
     };
   }
 

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 import 'dart:async';
 
 import 'SaveData.dart';
@@ -37,8 +38,8 @@ class _TimeTableState extends State<TimeTable> {
       //print(loadCell);
       print("load---------------${loadCell.label}}");
       return loadCell;
-    }).toList();
-    data[index]!.sort((a,b)=> (a.start[0]*360+a.start[1]*60+a.start[2]-b.start[0]*360+b.start[1]*60+b.start[2]) );
+    }).toList()..sort((a,b)=> a.remainDuration(b.toDateTime(today,type: true))["startYet"]?1:-1 );
+    //data[index]!;
     
     print("loadEnd");
   }
@@ -76,12 +77,15 @@ class _TimeTableState extends State<TimeTable> {
         int cellEndNextIndex = data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"]);
         cellActiveIndex = cellEndNextIndex;
         //cellProgress = cellStartNextIndex == cellEndNextIndex;
-        print("cellActiveIndex=$cellActiveIndex // weekActiveIndex=$weekActiveIndex // data[$weekActiveIndex].length=${data[weekActiveIndex]!.length}");
-        
+        //print("cellActiveIndex=$cellActiveIndex // weekActiveIndex=$weekActiveIndex // data[$weekActiveIndex].length=${data[weekActiveIndex]!.length}");
         timerTest++;
-        if (timerTest%20 == 0){
+        //print("${timerTest} --> ${timerTest%(1*20)} ==> ${timerTest%(1*20) == 0}:${data[0]!.length <= 60}");
+        
+        if (timerTest%(1*20) == 0 & data[0]!.length <= 60){
           //data[0]!.add(Cell());
-          //print("${(data[0]??[]).length} =>> saved");
+          //print("saved");
+          //save(0);
+          //data[0]!.add(Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute,today.second+10],end: [today.hour,today.minute,today.second+20]));
           //save(0);
         }
       });
@@ -162,7 +166,7 @@ class _TimeTableState extends State<TimeTable> {
                       isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):"",
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        fontSize: 20, 
+                        fontSize: 20, // 시작값
                         color: isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 안보여질 텍스트 -> mainCell을 조건에 넣을 필요가 없음
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
@@ -182,7 +186,7 @@ class _TimeTableState extends State<TimeTable> {
                       "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
                       textAlign: TextAlign.right,
                       style: TextStyle(
-                        fontSize: 20, 
+                        fontSize: 20, // 끝값
                         color: isMainCell&!isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 isStart=false -> mainCell이 아니면 무조건 거짓 -> mainCell을 조건에 넣어야함
                         fontWeight: FontWeight.bold, 
                         letterSpacing: 2.0
@@ -208,32 +212,60 @@ class _TimeTableState extends State<TimeTable> {
     }
     //https://www.youtube.com/watch?v=T4Uehk3_wlY
     return Scaffold(
+      backgroundColor: Colors.amber, // widget과 widget사이의 공간 매우기
       body: Column(
       //mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        cellActiveIndex == -1?
-        Container(
-          color: Colors.amber,
-          height: MediaQuery.of(context).size.height*0.3,
-          padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
-          child: Text("남은 수업이 없습니다!")//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
-        ):
-        Container(
-          color: Colors.amber,
-          height: MediaQuery.of(context).size.height*0.3,
-          padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
-          child: topActive(data[weekActiveIndex]![cellActiveIndex], isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            cellActiveIndex == -1?
+            Container(
+              //color: Colors.amber, //특정색(남은시간 배경색) ==> Scaffold색으로 사용
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height*0.3,
+              padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
+              child: FittedBox(
+                child:Text(
+                  "남은 수업이 없습니다!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black54, 
+                  ),
+                )
+              )
+              //Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+            ):
+            Container(
+              //color: Colors.amber, //특정색(타이머 배경색) ==> Scaffold색으로 사용
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height*0.3,
+              padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
+              child: topActive(data[weekActiveIndex]![cellActiveIndex], isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+            ),
+            Positioned(bottom: 0, child: Text(DateFormat.Hms().format(today))),
+          ],
         ),
         Expanded( 
           child : Container(
-            color: Colors.amberAccent,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.amber.withOpacity(0),
+                  Colors.amber.shade700,
+                ],
+              ),
+            ),
+            //color: Colors.amberAccent, //리스트 배경색 ==> BoxDecoration사용으로 필요가 없어짐
             //padding: EdgeInsets.all(40),
             child: ListView.builder(
               shrinkWrap: true,
               itemCount:  data[0]!.length,
               itemBuilder: (context, index) => 
               Card(
-                color: index==cellActiveIndex?Colors.amber:Colors.blue,
+                color: index==cellActiveIndex?Colors.amber:Colors.blue, //리스트카드 색
                 child: Container(
                   padding: EdgeInsets.fromLTRB(50,20,50,20),
                   child: topActive(data[0]![index]),//topActive(Cell(label: "$index교시")),
@@ -251,26 +283,23 @@ class _TimeTableState extends State<TimeTable> {
     ),
     floatingActionButton: Column(
       children: <Widget>[
-        Container(
-          height: 30,
+        FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: (){
+            //saveData.remove('cellList_0');
+            data[0]!.add(Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute,today.second+10],end: [today.hour,today.minute,today.second+20]));
+            save(0);
+            print("addaddadd");
+          },
         ),
         FloatingActionButton(
-      child: Icon(Icons.add),
-      onPressed: (){
-        //saveData.remove('cellList_0');
-        data[0]!.add(Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute+2,today.second],end: [today.hour,today.minute+4,today.second]));
-        save(0);
-        print("addaddadd");
-      },
-    ),
-    FloatingActionButton(
-      child: Icon(Icons.delete),
-      onPressed: (){
-        saveData.remove('cellList_0');
-        load(0);
-        print("removeremoveremove");
-      },
-    ),
+          child: Icon(Icons.delete),
+          onPressed: (){
+            saveData.remove('cellList_0');
+            load(0);
+            print("removeremoveremove");
+          },
+        ),
       ],
     )
     );
