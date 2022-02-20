@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
@@ -162,6 +163,7 @@ class _TimeTableState extends State<TimeTable> {
   @override
   Widget build(BuildContext context) {
     if(!timerIsPlaying) {
+      dio();
       timerIsPlaying = true;
       data.forEach((k,v) => load(k));
       start();
@@ -221,14 +223,14 @@ class _TimeTableState extends State<TimeTable> {
             //padding: EdgeInsets.all(40),
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount:  data[weekSelectIndex]!.length,
+              itemCount:  (weekSelectIndex!=-1?data[weekSelectIndex]!:[]).length,
               itemBuilder: (context, index) => 
               Card(
                 color: (index==cellActiveIndex)&(weekActiveIndex==weekSelectIndex)?Colors.amber:Colors.blue, //리스트카드 색
                 child: Container(
                   padding: EdgeInsets.fromLTRB(50,20,50,20),
                   child: topActive(
-                    data[weekSelectIndex]![index],
+                    (weekSelectIndex!=-1?data[weekSelectIndex]!:[])[index],
                     func: (e){
                       print(e);
                       e.editDialog(context).then((value){
@@ -359,7 +361,25 @@ class _TimeTableState extends State<TimeTable> {
     );
   }
   //#endregion
+
+  
+  //#region Dio
+  dio() async{
+    print("qweqweqwe");
+    Response? response;
+    var dio = Dio();
+    response = await dio.get("https://open.neis.go.kr/hub/schoolInfo", queryParameters: {
+      "Type":"json",
+	    "pIndex":1,
+	    "pSize":10,
+	    "KEY":"ff7b0526cb3243afbb640bb84ae9465e",
+    });
+    print(response.data.toString());
+  }
+  //#endregion
+
 }
+
 
 /*
   1. 색: 색상 관련 용어, 기본기, 색채 심리학

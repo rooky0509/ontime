@@ -180,6 +180,8 @@ Opacity : https://stackoverflow.com/questions/50590353/how-to-change-the-opacity
   ㄴ 투명도 적용
 parameter F(F(p) func) : https://stackoverflow.com/questions/43334714/pass-a-typed-function-as-a-parameter-in-dart/43611520
   ㄴ 함수 파라미터를 함수로 넣을 수 있음
+Map.forEach : https://www.tutorialspoint.com/dart_programming/dart_programming_map_function_foreach.htm
+  ㄴ 맵.forEach((k,v) => print('${k}: ${v}')); 
 
 Dialog Editor
   : https://blog.codefactory.ai/flutter/form/
@@ -206,6 +208,8 @@ Drawer
     ㄴ drawer크기 조정 + drawer사용방법
   : https://www.tldevtech.com/snippet/flutter-circular-button/
     ㄴ 동그란 버튼생성
+  : https://www.codegrepper.com/code-examples/dart/make+a+column+scrollable+flutter
+    ㄴ SingleChildScrollView + Column 사용
 
 * https://ppss.kr/archives/154369 * => 디자인
 * https://medium.com/@originerd/정규-표현식-좀-더-깊이-알아보기-5bd16027e1e0 * => 정규식
