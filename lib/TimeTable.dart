@@ -15,14 +15,14 @@ class TimeTable extends StatefulWidget{
 class _TimeTableState extends State<TimeTable> {
 
   //#region value
-  //double height = MediaQuery.of(context).size.height
-  
   SaveData saveData = SaveData();
   Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};  //{0:[Cell(),Cell()],1:[Cell(),Cell()],}
   
   DateTime today = DateTime.now();
   int weekActiveIndex = 0;
   int cellActiveIndex = -1;
+
+  List<String> weektoText = ["월","화","수","목","금","토","일","ㅗ"];
 
   String keyStr(int weekIndex){
     return "cellList_$weekIndex";
@@ -38,13 +38,13 @@ class _TimeTableState extends State<TimeTable> {
     List<String> toSaveList = data[weekIndex]!.map((e) => e.toString()).toList();
     saveData.setStringList( keyStr(weekIndex) , toSaveList);
   }
+  void clear(int weekIndex) {
+    saveData.remove( keyStr(weekIndex) );
+    load(weekIndex);
+  }
   void add(int weekIndex, Cell cell) {
     data[weekIndex]!.add(cell);
     //save(weekIndex);
-  }
-  void clear(int weekIndex) {
-    saveData.remove('cellList_$weekIndex');
-    load(weekIndex);
   }
   
   //#endregion
@@ -73,7 +73,7 @@ class _TimeTableState extends State<TimeTable> {
   //#endregion
   
   //#region Top widget
-  Widget topActive(Cell cell, Function(Cell e) func, {bool isMainCell = false}){
+  Widget topActive(Cell cell, {required Function(Cell e) func, bool isMainCell = false}){
     Map<String,dynamic>? remainTime;
     bool isStart = false;
     String start = "--:--:--";
@@ -85,29 +85,24 @@ class _TimeTableState extends State<TimeTable> {
       end = remainTime["end"];
     }
     //bool isActive = cell.start
-    Widget text(
-      String inputText, {
-      Color color = Colors.black54, 
-      double fontSize = 15.0, 
-      TextAlign textAlign = TextAlign.center
-    }){
+    Widget text(String inputText, {Color color = Colors.black54,double fontSize = 15.0, Alignment alignment = Alignment.center}){
       return Container(
-                        alignment: Alignment.centerLeft,
-                        color:Colors.red,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            inputText,//cell.label,
-                            textAlign: textAlign,//TextAlign.left,
-                            style: TextStyle(
-                              fontSize: fontSize,//15, 
-                              color: color, 
-                              fontWeight: FontWeight.bold, 
-                              letterSpacing: 2.0
-                            ),
-                          ),
-                        ),
-                      );
+        alignment: alignment,
+        //color:Colors.red.withOpacity(0.1),
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(
+            inputText,//cell.label,
+            //textAlign: textAlign,//TextAlign.left,
+            style: TextStyle(
+              fontSize: fontSize,//15, 
+              color: color, 
+              fontWeight: FontWeight.bold, 
+              letterSpacing: 2.0
+            ),
+          ),
+        ),
+      );
     }
     Widget widget = Row(// 4 : 3 : 5
       children: [
@@ -117,9 +112,9 @@ class _TimeTableState extends State<TimeTable> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              text(cell.label , textAlign: TextAlign.left),
+              text(cell.label , alignment : Alignment.centerLeft),
               text(cell.subject , fontSize: 40),
-              text(cell.label , textAlign: TextAlign.left),
+              text(cell.label , alignment : Alignment.centerRight),
             ],
           )
         ),
@@ -133,23 +128,24 @@ class _TimeTableState extends State<TimeTable> {
               text(
                 isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):" ",//"~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
                 color: isStart ? Colors.blue : Colors.black54,
-                textAlign: TextAlign.right
+                 alignment : Alignment.centerRight
               ),
               text(
                 isMainCell?( isStart ? start : end ):(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")),
                 fontSize: 50,
-                textAlign: TextAlign.right
+                 alignment : Alignment.centerRight
               ),
               text(
                 "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
                 color: isMainCell&!isStart ? Colors.blue : Colors.black54,
-                textAlign: TextAlign.right
+                 alignment : Alignment.centerRight
               ),
             ],
           )
         ),
       ],
     );
+
     return GestureDetector(
       onDoubleTap: (){
         func(cell);
@@ -200,10 +196,8 @@ class _TimeTableState extends State<TimeTable> {
               height: MediaQuery.of(context).size.height*0.3,
               padding: EdgeInsets.fromLTRB(40, 70, 40, 40),
               child: topActive(
-                data[weekActiveIndex]![cellActiveIndex], 
-                (e){
-
-                },
+                data[weekActiveIndex]![cellActiveIndex],
+                func: (e){},
                 isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",detail: "가나다",start: [08,30,00], end: [09,20,00]))
             ),
             Positioned(bottom: 0, child: Text(DateFormat.Hms().format(today))),
@@ -233,7 +227,7 @@ class _TimeTableState extends State<TimeTable> {
                   padding: EdgeInsets.fromLTRB(50,20,50,20),
                   child: topActive(
                     data[0]![index],
-                    (e){
+                    func: (e){
                       print(e);
                       e.editDialog(context).then((value){
                         if(value){
@@ -258,55 +252,98 @@ class _TimeTableState extends State<TimeTable> {
         )
       ],
     ),
-    floatingActionButton: Column(
-      children: <Widget>[
-        FloatingActionButton(
-          child: Icon(Icons.add),
-          onPressed: () async{
-            //saveData.remove('cellList_0');
-            Cell newCell = Cell();
-            newCell.editDialog(context).then((value){
-              if(value){
-                print("[$newCell]Get!! value : $value");
-                add(0, newCell);
-                save(0);
-              }else{
-                print("GET!! but.. False! => add close");
-              }
-            });
-            print("addaddadd");
-          },
-        ),
-        FloatingActionButton(
-          child: Icon(Icons.delete),
-          onPressed: () async{
-            clear(0);
-
-
-            /*
-            
-            Cell(
-              label: "$timerTest교시",
-              subject: "기술가정",
-              start: [today.hour,today.minute,today.second+10],
-              end: [today.hour,today.minute,today.second+20]
-            ).editDialog(context).then((value){
-              print("[${DateFormat.Hms().format(today)}]Get!! value : $value");
-              save(0);
-            });
-            
-            EditDialog(context, Cell(
-              label: "$timerTest교시",
-              subject: "기술가정",
-              start: [today.hour,today.minute,today.second+10],
-              end: [today.hour,today.minute,today.second+20]
-            ));*/
-          },
-        ),
-      ],
-    )
+      floatingActionButton: Column(
+        children: <Widget>[
+          FloatingActionButton(
+            child: Icon(Icons.add),
+            onPressed: () async{
+              //saveData.remove('cellList_0');
+            },
+          ),
+          FloatingActionButton(
+            child: Icon(Icons.delete),
+            onPressed: () async{
+              clear(0);
+            },
+          ),
+        ],
+      ),
+      drawer: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(data.length, (index) => 
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                height: 70,
+                child: MaterialButton(
+                  shape: weekActiveIndex==index ? CircleBorder(side: BorderSide(width: 3, color: Colors.amber, style: BorderStyle.solid)) : CircleBorder(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.calendar_today, color: Colors.white),
+                      Text(weektoText[index]),
+                    ],
+                  ),
+                  color: index==5?Colors.blue:index==6?Colors.red:Colors.grey,
+                  textColor: Colors.white,
+                  onPressed: (){
+                    print('I:${index}_clicked');
+                  },
+                ),
+              )
+        )..addAll(
+          [
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                height: 70,
+                child: MaterialButton(
+                  shape: CircleBorder(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.add, color: Colors.white),
+                      Text("Add"),
+                    ],
+                  ),
+                  color: Colors.amber.shade600,
+                  textColor: Colors.white,
+                  onPressed: (){
+                    Cell newCell = Cell();
+                    newCell.editDialog(context).then((value){
+                      if(value){
+                        print("[$newCell]Get!! value : $value");
+                        add(0, newCell);
+                        save(0);
+                      }else{
+                        print("GET!! but.. False! => add close");
+                      }
+                    });
+                    print('Add_clicked');
+                  },
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                height: 70,
+                child: MaterialButton(
+                  shape: CircleBorder(),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.settings, color: Colors.white),
+                      Text("Setting"),
+                    ],
+                  ),
+                  color: Colors.grey.shade600,
+                  textColor: Colors.white,
+                  onPressed: (){
+                    print('Setting_clicked');
+                  },
+                ),
+              ),
+          ]
+        )
+      ),
     );
-    
   }
   //#endregion
 }
