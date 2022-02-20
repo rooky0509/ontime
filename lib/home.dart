@@ -42,13 +42,13 @@ class _HomeState extends State<Home>{
       flex: 1,
       child: MaterialButton(
         //minWidth: 60,
-        height: 60,
+        height: 30,
         onPressed: ()=>setTab(indexTab),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(icon, color: color),
-            Text("$indexTab", style: TextStyle(color: color))
+            //Text("$indexTab", style: TextStyle(color: color))
           ],
         ),
       ),

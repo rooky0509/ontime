@@ -20,6 +20,7 @@ class _TimeTableState extends State<TimeTable> {
   
   DateTime today = DateTime.now();
   int weekActiveIndex = 0;
+  int weekSelectIndex = -1;
   int cellActiveIndex = -1;
 
   List<String> weektoText = ["월","화","수","목","금","토","일","ㅗ"];
@@ -63,7 +64,8 @@ class _TimeTableState extends State<TimeTable> {
     _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
       setState(() {
         today = DateTime.now();
-        weekActiveIndex = 0;//today.weekday-1;
+        weekActiveIndex = today.weekday-1;
+        if(weekSelectIndex==-1) weekSelectIndex = weekActiveIndex;
         int cellEndNextIndex = data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"]);
         cellActiveIndex = cellEndNextIndex;
         timerTest++;
@@ -161,7 +163,7 @@ class _TimeTableState extends State<TimeTable> {
   Widget build(BuildContext context) {
     if(!timerIsPlaying) {
       timerIsPlaying = true;
-      load(0);
+      data.forEach((k,v) => load(k));
       start();
     }
     //https://www.youtube.com/watch?v=T4Uehk3_wlY
@@ -200,7 +202,7 @@ class _TimeTableState extends State<TimeTable> {
                 func: (e){},
                 isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",detail: "가나다",start: [08,30,00], end: [09,20,00]))
             ),
-            Positioned(bottom: 0, child: Text(DateFormat.Hms().format(today))),
+            Positioned(bottom: 0, child: Text("Time : ${DateFormat.Hms().format(today)} | Week : $weekActiveIndex | WeekS : $weekSelectIndex")),
           ],
         ),
         Expanded( 
@@ -210,7 +212,7 @@ class _TimeTableState extends State<TimeTable> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.amber.withOpacity(0),
+                  Colors.amber.withOpacity(0.0),
                   Colors.amber.shade700,
                 ],
               ),
@@ -219,25 +221,25 @@ class _TimeTableState extends State<TimeTable> {
             //padding: EdgeInsets.all(40),
             child: ListView.builder(
               shrinkWrap: true,
-              itemCount:  data[0]!.length,
+              itemCount:  data[weekSelectIndex]!.length,
               itemBuilder: (context, index) => 
               Card(
-                color: index==cellActiveIndex?Colors.amber:Colors.blue, //리스트카드 색
+                color: (index==cellActiveIndex)&(weekActiveIndex==weekSelectIndex)?Colors.amber:Colors.blue, //리스트카드 색
                 child: Container(
                   padding: EdgeInsets.fromLTRB(50,20,50,20),
                   child: topActive(
-                    data[0]![index],
+                    data[weekSelectIndex]![index],
                     func: (e){
                       print(e);
                       e.editDialog(context).then((value){
                         if(value){
                           print("[${DateFormat.Hms().format(today)}]Get!! value : $value");
-                          save(0);
+                          save(weekSelectIndex);
                         }else{
                           print("GET!! but.. False!");
                         }
                       });
-                      //save(0);
+                      //save(weekSelectIndex);
                     }
                   ),//topActive(Cell(label: "$index교시")),
                 )
@@ -245,104 +247,115 @@ class _TimeTableState extends State<TimeTable> {
               Container(
                 color: index==cellActiveIndex?Colors.green:Colors.blue,
                 padding: EdgeInsets.fromLTRB(50,20,50,10),
-                child: topActive(data[0]![index]),//topActive(Cell(label: "$index교시")),
+                child: topActive(data[weekSelectIndex]![index]),//topActive(Cell(label: "$index교시")),
               )*/
             ),
           )
         )
       ],
     ),
-      floatingActionButton: Column(
-        children: <Widget>[
-          FloatingActionButton(
-            child: Icon(Icons.add),
-            onPressed: () async{
-              //saveData.remove('cellList_0');
-            },
+      drawer: SingleChildScrollView(
+        child : Container(
+          //alignment: Alignment.centerLeft,
+          padding: EdgeInsets.fromLTRB(0, 75*4, 0, 75*4),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(data.length, (index) => 
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                    height: 65,
+                    child: MaterialButton(
+                      shape: weekActiveIndex==index ? CircleBorder(side: BorderSide(width: 3, color: Colors.amber, style: BorderStyle.solid)) : CircleBorder(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.calendar_today, color: Colors.white),
+                          Text(weektoText[index]),
+                        ],
+                      ),
+                      color: index==5?Colors.blue:index==6?Colors.red:Colors.grey,
+                      textColor: Colors.white,
+                      onPressed: (){
+                        setState((){weekSelectIndex = index;});
+                        print('I:${index}_clicked');
+                      },
+                    ),
+                  )
+            )..addAll(
+              [
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                    height: 70,
+                    child: MaterialButton(
+                      shape: CircleBorder(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.add, color: Colors.white),
+                          Text("Add"),
+                        ],
+                      ),
+                      color: Colors.amber.shade600,
+                      textColor: Colors.white,
+                      onPressed: (){
+                        Cell newCell = Cell();
+                        newCell.editDialog(context).then((value){
+                          if(value){
+                            print("[$newCell]Get!! value : $value");
+                            add(weekSelectIndex, newCell);
+                            save(weekSelectIndex);
+                          }else{
+                            print("GET!! but.. False! => add close");
+                          }
+                        });
+                        print('Add_clicked');
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                    height: 70,
+                    child: MaterialButton(
+                      shape: CircleBorder(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.delete, color: Colors.white),
+                          Text("Clear"),
+                        ],
+                      ),
+                      color: Colors.amber.shade900,
+                      textColor: Colors.white,
+                      onPressed: (){
+                        clear(weekSelectIndex);
+                      },
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
+                    height: 70,
+                    child: MaterialButton(
+                      shape: CircleBorder(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.settings, color: Colors.white),
+                          Text("Setting"),
+                        ],
+                      ),
+                      color: Colors.grey.shade600,
+                      textColor: Colors.white,
+                      onPressed: (){
+                        print('Setting_clicked');
+                      },
+                    ),
+                  ),
+              ]
+            )
           ),
-          FloatingActionButton(
-            child: Icon(Icons.delete),
-            onPressed: () async{
-              clear(0);
-            },
-          ),
-        ],
-      ),
-      drawer: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: List.generate(data.length, (index) => 
-              Container(
-                margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
-                height: 70,
-                child: MaterialButton(
-                  shape: weekActiveIndex==index ? CircleBorder(side: BorderSide(width: 3, color: Colors.amber, style: BorderStyle.solid)) : CircleBorder(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.calendar_today, color: Colors.white),
-                      Text(weektoText[index]),
-                    ],
-                  ),
-                  color: index==5?Colors.blue:index==6?Colors.red:Colors.grey,
-                  textColor: Colors.white,
-                  onPressed: (){
-                    print('I:${index}_clicked');
-                  },
-                ),
-              )
-        )..addAll(
-          [
-              Container(
-                margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
-                height: 70,
-                child: MaterialButton(
-                  shape: CircleBorder(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.add, color: Colors.white),
-                      Text("Add"),
-                    ],
-                  ),
-                  color: Colors.amber.shade600,
-                  textColor: Colors.white,
-                  onPressed: (){
-                    Cell newCell = Cell();
-                    newCell.editDialog(context).then((value){
-                      if(value){
-                        print("[$newCell]Get!! value : $value");
-                        add(0, newCell);
-                        save(0);
-                      }else{
-                        print("GET!! but.. False! => add close");
-                      }
-                    });
-                    print('Add_clicked');
-                  },
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(10, 5, 0, 5),
-                height: 70,
-                child: MaterialButton(
-                  shape: CircleBorder(),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.settings, color: Colors.white),
-                      Text("Setting"),
-                    ],
-                  ),
-                  color: Colors.grey.shade600,
-                  textColor: Colors.white,
-                  onPressed: (){
-                    print('Setting_clicked');
-                  },
-                ),
-              ),
-          ]
         )
       ),
+    
     );
   }
   //#endregion
