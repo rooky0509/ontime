@@ -85,96 +85,67 @@ class _TimeTableState extends State<TimeTable> {
       end = remainTime["end"];
     }
     //bool isActive = cell.start
-
+    Widget text(
+      String inputText, {
+      Color color = Colors.black54, 
+      double fontSize = 15.0, 
+      TextAlign textAlign = TextAlign.center
+    }){
+      return Container(
+                        alignment: Alignment.centerLeft,
+                        color:Colors.red,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            inputText,//cell.label,
+                            textAlign: textAlign,//TextAlign.left,
+                            style: TextStyle(
+                              fontSize: fontSize,//15, 
+                              color: color, 
+                              fontWeight: FontWeight.bold, 
+                              letterSpacing: 2.0
+                            ),
+                          ),
+                        ),
+                      );
+    }
     Widget widget = Row(// 4 : 3 : 5
       children: [
         Expanded(
-          flex: 4,
-          child: FittedBox(
-            alignment: Alignment.centerLeft,
-            fit:BoxFit.scaleDown,
-            child: IntrinsicWidth(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text(
-                    cell.label,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 15, 
-                      color: Colors.black54, 
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2.0
-                    ),
-                  ),
-                  Text(
-                    cell.subject,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 40, 
-                      color: Colors.black54, 
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2.0
-                    ),
-                  ),
-                  Text(
-                    cell.detail,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 15, 
-                      color: Colors.black54, 
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2.0
-                    ),
-                  ),
-                ],
-              )
-            )
+          flex: 7,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              text(cell.label , textAlign: TextAlign.left),
+              text(cell.subject , fontSize: 40),
+              text(cell.label , textAlign: TextAlign.left),
+            ],
           )
         ),
-        Expanded(flex: 3,child: Container(),),
+        Expanded(flex: 2,child: Container(),),
         Expanded(
-          flex: 5,
-          child: FittedBox(
-            alignment: Alignment.centerRight,
-            fit:BoxFit.scaleDown,
-            child: IntrinsicWidth(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Text( //isMainCell?특정값:기본값
-                    isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):"",
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 20, // 시작값
-                      color: isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 안보여질 텍스트 -> mainCell을 조건에 넣을 필요가 없음
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2.0
-                    ),
-                  ),
-                  Text( //isMainCell?특정값:기본값//remainTime["isStart"]?끝나기까지남은시간:시작하기까지남은시간
-                    isMainCell?( isStart ? start : end ):(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")),
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 50, 
-                      color: Colors.black54, 
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2.0
-                    ),
-                  ),
-                  Text(
-                    "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 20, // 끝값
-                      color: isMainCell&!isStart ? Colors.blue : Colors.black54, //mainCell이 아니면 isStart=false -> mainCell이 아니면 무조건 거짓 -> mainCell을 조건에 넣어야함
-                      fontWeight: FontWeight.bold, 
-                      letterSpacing: 2.0
-                    ),
-                  ),
-                ],
-              )
-            )
+          flex: 7,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              text(
+                isMainCell?(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")+"~"):" ",//"~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
+                color: isStart ? Colors.blue : Colors.black54,
+                textAlign: TextAlign.right
+              ),
+              text(
+                isMainCell?( isStart ? start : end ):(cell.start.map((e) => "$e".padLeft(2,"0")).join(":")),
+                fontSize: 50,
+                textAlign: TextAlign.right
+              ),
+              text(
+                "~"+cell.end.map((e) => "$e".padLeft(2,"0")).join(":"),
+                color: isMainCell&!isStart ? Colors.blue : Colors.black54,
+                textAlign: TextAlign.right
+              ),
+            ],
           )
         ),
       ],
