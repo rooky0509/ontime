@@ -194,6 +194,8 @@ Dialog Editor
 정규식(Regular Expressions / Regex)
   : https://medium.com/@originerd/정규-표현식-좀-더-깊이-알아보기-5bd16027e1e0
     ㄴ 정규표현식에 대하여
+  : https://blog.naver.com/PostView.naver?blogId=knight50&logNo=80128661197&redirect=Dlog&widgetTypeCall=true&directAccess=false
+    ㄴ 정규식 자세하게
   : https://rubular.com/r/gY8DYYyIEH4OWy
     ㄴ 정규표현식 테스트
   : https://tksuns12.github.io/project/sossul-sixth/

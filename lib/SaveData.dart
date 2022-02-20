@@ -34,14 +34,14 @@ class SaveData {
 }
 
 class Cell {  //1과목
-  String label, subject, teacher;
+  String label, subject, detail;
   List<int> start, end;
   //bool isActive;
   
   Cell({
     this.label = "1교시",
     this.subject = "국어",
-    this.teacher = "ㅇㅇㅇ",
+    this.detail = "ㅇㅇㅇ",
     this.start = const [8,30,0],
     this.end = const [9,20,0],
     //this.isActive = false,
@@ -50,7 +50,7 @@ class Cell {  //1과목
   String toString() => jsonEncode({
     "label" : label,
     "subject" : subject,
-    "teacher" : teacher,
+    "detail" : detail,
     "start" : start,
     "end" : end,
   });
@@ -59,14 +59,14 @@ class Cell {  //1과목
     Map<String,dynamic> json = jsonDecode(jsonStr);
     label = json["label"];
     subject = json["subject"];
-    teacher = json["teacher"];
+    detail = json["detail"];
     start = json["start"].cast<int>();
     end = json["end"].cast<int>();
     //isActive = false;
     return Cell(
       label : label,
       subject : subject,
-      teacher : teacher,
+      detail : detail,
       start : start,
       end : end,
       //isActive : false,
@@ -121,16 +121,16 @@ class Cell {  //1과목
 
   Future<bool> editDialog(BuildContext context) async{
     final formKey = GlobalKey<FormState>();
-    String? resultLabel, resultSubject, resultTeacher;
-    List<int>? resultStart, resultEnd;
-    //bool validateState = formKey.currentState==null?true:formKey.currentState!.validate(); //yesButton에서만 사용
-    Widget tff({required String label,required initial ,required FormFieldSetter onSaved,required FormFieldValidator validator,}) {
+    String? resultLabel, resultSubject, resultDetail;
+    List<int>? resultStart = [0,0,0], resultEnd = [0,0,0];
+    Widget tff({required String label,required initial ,required FormFieldSetter onSaved,required FormFieldValidator validator, TextInputType keyboardType = TextInputType.text}) {
       Widget widget = TextFormField(
         textAlignVertical: TextAlignVertical.center,
         autovalidateMode: AutovalidateMode.always,
         onSaved: onSaved,  //함수
         validator: validator,  //함수
         initialValue: initial,  //박스 안 내용
+        keyboardType: keyboardType,
         decoration: InputDecoration(  //박스 스타일
           contentPadding: const EdgeInsets.symmetric(vertical: 25.0, horizontal: 10.0),  //내용패딩
           
@@ -143,40 +143,25 @@ class Cell {  //1과목
       );
       return  ConstrainedBox(
           constraints: const BoxConstraints.tightFor(width: double.infinity),
-          child:Container(color: Colors.blue.withOpacity(0.5), padding: EdgeInsets.all(10),child: widget,),
+          child:Container(color: Colors.blue.withOpacity(0.5), padding: EdgeInsets.fromLTRB(3, 5, 3, 5) ,child: widget,),
       );
     } 
     Widget yesButton() {
       bool validateState = formKey.currentState==null?true:formKey.currentState!.validate();
-      print("yesButton() : formKey.currentState==null : ${formKey.currentState==null}");
       Widget widget = RaisedButton(
         color: validateState ? Colors.blue : Colors.grey,
         onPressed: () async {
           if (validateState){
             formKey.currentState!.save();
-            print("formKey.currentState!.validate() == true");
             label = resultLabel??"LLL";
             subject = resultSubject??"SSS";
-            teacher = resultTeacher??"TTT";
-            start = resultStart??[0,0,0];
-            end = resultEnd??[9,9,9];
-            print("""
-            label = ${resultLabel!};
-            subject = ${resultSubject!};
-  edit!!    teacher = ${resultTeacher!};
-            start = ${resultStart}!;
-            end = ${resultEnd!};
-            """);
-            print("Navigator.pop(context, true);");
+            detail = resultDetail??"TTT";
+            start = resultStart;
+            end = resultEnd;
             Navigator.pop(context, true);
           }
         },// validation 이 성공하면 true 가 리턴돼요!  //validation 이 성공하면 폼 저장하기
-        child: Text(
-          '\n저장하기!\n',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
+        child: Text("\n저장하기!\n",style: TextStyle(color: Colors.white,),),
       ); 
       return  ConstrainedBox(
         constraints: const BoxConstraints.tightFor(width: double.infinity),
@@ -187,16 +172,11 @@ class Cell {  //1과목
       Widget widget = RaisedButton(
         color: Colors.red,
         onPressed: () => Navigator.pop(context, false),
-        child: Text(
-          '\n끄기\n',
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
+        child: Text("\n끄기!\n",style: TextStyle(color: Colors.white,),),
       ); 
       return  ConstrainedBox(
         constraints: const BoxConstraints.tightFor(width: double.infinity),
-        child:Container(color: Colors.red.withOpacity(0.5), padding: EdgeInsets.all(10),child: widget,),
+        child:Container(color: Colors.red.withOpacity(0.1), padding: EdgeInsets.all(10),child: widget,),
       );
     }
     final result = await showDialog(
@@ -207,7 +187,8 @@ class Cell {  //1과목
           shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(20.0)),
           child: Form(
             key: formKey,
-            child: Padding(
+            child: Container(
+              color: Colors.blue, //배경
               padding: EdgeInsets.all(16.0),
               child: Column(
                 children: [
@@ -230,39 +211,104 @@ class Cell {  //1과목
                     },
                   ),
                   tff(
-                    label : "Teacher",
-                    initial : teacher,
-                    onSaved : (val) => resultTeacher = val,
+                    label : "Detail",
+                    initial : detail,
+                    onSaved : (val) => resultDetail = val,
                     validator : (val) {
                       if(val.length < 1) return '필수사항입니다.';
                       return null;
                     },
                   ),
                   Row(
-                    //mainAxisSize: MainAxisSize.max,
                     children: <Widget>[
-                      
-                      Expanded(child: tff(
-                        label : "Start",
-                        initial : start.map((e) => e.toString().padLeft(2,"0")).join(":"),
-                        onSaved : (val) => resultStart = val.split(":").map((e)=>int.parse(e)).toList().cast<int>(),
+                      Expanded(flex: 3,child: tff(
+                        label : "H",    
+                        keyboardType: TextInputType.number,
+                        initial : start[0].toString().padLeft(2,"0"),  //[]->""
+                        onSaved : (val) => resultStart[0] = int.parse(val),
                         validator : (val) { //^\d\d:\d\d:\d\d$
-                          if(!RegExp(r"^\d\d:\d\d:\d\d$").hasMatch(val)) return "00:00:00 형식이 아닙니다.";
-                          else print("00:00:00 형식");
-                          return null;
+                          if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
+                          else{
+                            int input = int.parse(val);
+                            if((input>=0)&(input <24)) return null;
+                            else return "00~24";
+                          }
                         },
                       )),
-                  
-                      Expanded(child: tff(
-                        label : "End",
-                        initial : end.map((e) => e.toString().padLeft(2,"0")).join(":"),
-                        onSaved : (val) => resultEnd = val.split(":").map((e)=>int.parse(e)).toList().cast<int>(),
+                      Expanded(flex: 3,child: tff(
+                        label : "M",    
+                        keyboardType: TextInputType.number,
+                        initial : start[1].toString().padLeft(2,"0"),  //[]->""
+                        onSaved : (val) => resultStart[1] = int.parse(val),
+                        validator : (val) { //^\d\d:\d\d:\d\d$
+                          if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
+                          else{
+                            int input = int.parse(val);
+                            if((input>=0)&(input <60)) return null;
+                            else return "00~60";
+                          }
+                        },
+                      )),
+                      Expanded(flex: 3,child: tff(
+                        label : "S",    
+                        keyboardType: TextInputType.number,
+                        initial : start[2].toString().padLeft(2,"0"),  //[]->""
+                        onSaved : (val) => resultStart[2] = int.parse(val),
+                        validator : (val) { //^\d\d:\d\d:\d\d$
+                          if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
+                          else{
+                            int input = int.parse(val);
+                            if((input>=0)&(input <60)) return null;
+                            else return "00~60";
+                          }
+                        },
+                      )),
+
+                      Spacer(flex: 1),
+
+                      Expanded(flex: 3,child: tff(
+                        label : "H",    
+                        keyboardType: TextInputType.number,
+                        initial : end[0].toString().padLeft(2,"0"),  //[]->""
+                        onSaved : (val) => resultEnd[0] = int.parse(val),
                         validator : (val) {
-                          if(!RegExp(r"^\d\d:\d\d:\d\d$").hasMatch(val)) return "00:00:00 형식이 아닙니다.";
-                          else print("00:00:00 형식");
-                          return null;
+                          if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
+                          else{
+                            int input = int.parse(val);
+                            if((input>=0)&(input <24)) return null;
+                            else return "00~24";
+                          }
                         },
                       )),
+                      Expanded(flex: 3,child: tff(
+                        label : "M",    
+                        keyboardType: TextInputType.number,
+                        initial : end[1].toString().padLeft(2,"0"),  //[]->""
+                        onSaved : (val) => resultEnd[1] = int.parse(val),
+                        validator : (val) {
+                          if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
+                          else{
+                            int input = int.parse(val);
+                            if((input>=0)&(input <60)) return null;
+                            else return "00~60";
+                          }
+                        },
+                      )),
+                      Expanded(flex: 3,child: tff(
+                        label : "S",    
+                        keyboardType: TextInputType.number,
+                        initial : end[2].toString().padLeft(2,"0"),  //[]->""
+                        onSaved : (val) => resultEnd[2] = int.parse(val),
+                        validator : (val) {
+                          if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
+                          else{
+                            int input = int.parse(val);
+                            if((input>=0)&(input <60)) return null;
+                            else return "00~60";
+                          }
+                        },
+                      )),
+
                     ],
                   ),
                   Row(
@@ -309,16 +355,16 @@ Shared Preferences
 /*
 {
   0:{ weekend
-    0:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"}, 
-    1:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"}
+    0:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"}, 
+    1:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"}
   },
   1:{
-    0:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
-    1:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"}
+    0:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"},
+    1:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"}
   },
   2:{
-    0:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
-    1:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"}
+    0:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"},
+    1:{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"}
   },
 }
 TextEdit({

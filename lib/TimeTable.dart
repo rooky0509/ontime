@@ -11,7 +11,7 @@ class TimeTable extends StatefulWidget{
   @override
   _TimeTableState createState() => _TimeTableState();
 }
-//{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","teacher":"ㅐㅐㅐ"},
+//{"tag":"1교시","start":[08,40,00],"end":[09,30,00],"name":"국어","detail":"ㅐㅐㅐ"},
 class _TimeTableState extends State<TimeTable> {
 
   //#region value
@@ -34,13 +34,13 @@ class _TimeTableState extends State<TimeTable> {
       return loadCell;
     }).toList()..sort((a,b)=> a.remainDuration(b.toDateTime(today,type: true))["startYet"]?1:-1 );
   }
-  void save(int weekIndex) async{
+  void save(int weekIndex) {
     List<String> toSaveList = data[weekIndex]!.map((e) => e.toString()).toList();
     saveData.setStringList( keyStr(weekIndex) , toSaveList);
   }
   void add(int weekIndex, Cell cell) {
     data[weekIndex]!.add(cell);
-    save(weekIndex);
+    //save(weekIndex);
   }
   void clear(int weekIndex) {
     saveData.remove('cellList_$weekIndex');
@@ -64,29 +64,9 @@ class _TimeTableState extends State<TimeTable> {
       setState(() {
         today = DateTime.now();
         weekActiveIndex = 0;//today.weekday-1;
-        /*
-        int cellStartNextIndex = data[weekActiveIndex]!.indexWhere((element){
-          DateTime targetTime = DateTime(today.year, today.month, today.day, element.start[0], element.start[1], element.start[2]);
-          Duration remainDuration = targetTime.difference(today);
-          bool isNext = remainDuration.inMicroseconds > 0;
-          print(isNext);
-          return isNext;
-        });
-        */
         int cellEndNextIndex = data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"]);
         cellActiveIndex = cellEndNextIndex;
-        //cellProgress = cellStartNextIndex == cellEndNextIndex;
-        //print("cellActiveIndex=$cellActiveIndex // weekActiveIndex=$weekActiveIndex // data[$weekActiveIndex].length=${data[weekActiveIndex]!.length}");
         timerTest++;
-        //print("${timerTest} --> ${timerTest%(1*20)} ==> ${timerTest%(1*20) == 0}:${data[0]!.length <= 60}");
-        
-        if (timerTest%(1*20) == 0 & data[0]!.length <= 60){
-          //data[0]!.add(Cell());
-          //print("saved");
-          //save(0);
-          //data[0]!.add(Cell(label: "$timerTest교시",subject: "기술가정",start: [today.hour,today.minute,today.second+10],end: [today.hour,today.minute,today.second+20]));
-          //save(0);
-        }
       });
     });
   }
@@ -138,7 +118,7 @@ class _TimeTableState extends State<TimeTable> {
                     ),
                   ),
                   Text(
-                    cell.teacher,
+                    cell.detail,
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 15, 
@@ -152,7 +132,7 @@ class _TimeTableState extends State<TimeTable> {
             )
           )
         ),
-        Spacer(flex: 3,),
+        Expanded(flex: 3,child: Container(),),
         Expanded(
           flex: 5,
           child: FittedBox(
@@ -241,7 +221,7 @@ class _TimeTableState extends State<TimeTable> {
                   ),
                 )
               )
-              //Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+              //Cell(label: "1교시$timerTest",subject: "과학",detail: "가나다",start: [08,30,00], end: [09,20,00]))
             ):
             Container(
               //color: Colors.amber, //특정색(타이머 배경색) ==> Scaffold색으로 사용
@@ -253,7 +233,7 @@ class _TimeTableState extends State<TimeTable> {
                 (e){
 
                 },
-                isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",teacher: "가나다",start: [08,30,00], end: [09,20,00]))
+                isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",detail: "가나다",start: [08,30,00], end: [09,20,00]))
             ),
             Positioned(bottom: 0, child: Text(DateFormat.Hms().format(today))),
           ],
@@ -311,14 +291,18 @@ class _TimeTableState extends State<TimeTable> {
       children: <Widget>[
         FloatingActionButton(
           child: Icon(Icons.add),
-          onPressed: (){
+          onPressed: () async{
             //saveData.remove('cellList_0');
-            add(0, Cell(
-              label: "$timerTest교시",
-              subject: "기술가정",
-              start: [today.hour,today.minute,today.second+10],
-              end: [today.hour,today.minute,today.second+20]
-            ));
+            Cell newCell = Cell();
+            newCell.editDialog(context).then((value){
+              if(value){
+                print("[$newCell]Get!! value : $value");
+                add(0, newCell);
+                save(0);
+              }else{
+                print("GET!! but.. False! => add close");
+              }
+            });
             print("addaddadd");
           },
         ),
