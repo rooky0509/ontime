@@ -201,6 +201,12 @@ Dialog Editor
   : https://tksuns12.github.io/project/sossul-sixth/
     ㄴ flutter에서의 사용
 
+Drawer
+  : https://stackoverflow.com/questions/57332430/adding-width-to-drawer-in-flutter
+    ㄴ drawer크기 조정 + drawer사용방법
+  : https://www.tldevtech.com/snippet/flutter-circular-button/
+    ㄴ 동그란 버튼생성
+
 * https://ppss.kr/archives/154369 * => 디자인
 * https://medium.com/@originerd/정규-표현식-좀-더-깊이-알아보기-5bd16027e1e0 * => 정규식
 * https://velog.io/@sangh518/flutter-tips *
