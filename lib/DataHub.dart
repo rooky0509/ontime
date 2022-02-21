@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
 
 class SaveData {
   SaveData();
@@ -31,6 +32,36 @@ class SaveData {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove(key);
   }
+}
+
+class GetData {
+  Dio dio = Dio(BaseOptions(
+    baseUrl: 'https://open.neis.go.kr/hub',
+    queryParameters: {
+      "Type":"json",
+      "KEY":"ff7b0526cb3243afbb640bb84ae9465e",
+    }
+  ));
+  GetData({dio});
+  
+  //#region Dio
+  Future<List> schoolInfo({required String schName}) async{
+    Response? response;
+    response = await dio.get("/schoolInfo", queryParameters: {
+	    "pSize":10,
+      "SCHUL_NM":schName
+    });
+    return jsonDecode(response.data)["schoolInfo"][1]["row"];
+  }
+  Future<List> hisTimetable({required String  arCode,required String schCode}) async{
+    Response? response;
+    response = await dio.get("/hisTimetable", queryParameters: {
+      "ATPT_OFCDC_SC_CODE":arCode,
+      "SD_SCHUL_CODE":schCode
+    });
+    return jsonDecode(response.data)["hisTimetable"][1]["row"];
+  }
+  //#endregion
 }
 
 class Cell {  //1과목
@@ -119,6 +150,7 @@ class Cell {  //1과목
     };
   }
 
+  /*
   Future<bool> editDialog(BuildContext context) async{
     final formKey = GlobalKey<FormState>();
     String? resultLabel, resultSubject, resultDetail;
@@ -224,7 +256,7 @@ class Cell {  //1과목
                       Expanded(flex: 3,child: tff(
                         label : "H",    
                         keyboardType: TextInputType.number,
-                        initial : start[0].toString().padLeft(2,"0"),  //[]->""
+                        initial : start[0].toString(),  //[]->""
                         onSaved : (val) => resultStart[0] = int.parse(val),
                         validator : (val) { //^\d\d:\d\d:\d\d$
                           if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
@@ -238,7 +270,7 @@ class Cell {  //1과목
                       Expanded(flex: 3,child: tff(
                         label : "M",    
                         keyboardType: TextInputType.number,
-                        initial : start[1].toString().padLeft(2,"0"),  //[]->""
+                        initial : start[1].toString(),  //[]->""
                         onSaved : (val) => resultStart[1] = int.parse(val),
                         validator : (val) { //^\d\d:\d\d:\d\d$
                           if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
@@ -252,7 +284,7 @@ class Cell {  //1과목
                       Expanded(flex: 3,child: tff(
                         label : "S",    
                         keyboardType: TextInputType.number,
-                        initial : start[2].toString().padLeft(2,"0"),  //[]->""
+                        initial : start[2].toString(),  //[]->""
                         onSaved : (val) => resultStart[2] = int.parse(val),
                         validator : (val) { //^\d\d:\d\d:\d\d$
                           if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
@@ -269,7 +301,7 @@ class Cell {  //1과목
                       Expanded(flex: 3,child: tff(
                         label : "H",    
                         keyboardType: TextInputType.number,
-                        initial : end[0].toString().padLeft(2,"0"),  //[]->""
+                        initial : end[0].toString(),  //[]->""
                         onSaved : (val) => resultEnd[0] = int.parse(val),
                         validator : (val) {
                           if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
@@ -283,7 +315,7 @@ class Cell {  //1과목
                       Expanded(flex: 3,child: tff(
                         label : "M",    
                         keyboardType: TextInputType.number,
-                        initial : end[1].toString().padLeft(2,"0"),  //[]->""
+                        initial : end[1].toString(),  //[]->""
                         onSaved : (val) => resultEnd[1] = int.parse(val),
                         validator : (val) {
                           if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
@@ -297,7 +329,7 @@ class Cell {  //1과목
                       Expanded(flex: 3,child: tff(
                         label : "S",    
                         keyboardType: TextInputType.number,
-                        initial : end[2].toString().padLeft(2,"0"),  //[]->""
+                        initial : end[2].toString(),  //[]->""
                         onSaved : (val) => resultEnd[2] = int.parse(val),
                         validator : (val) {
                           if(!RegExp(r"^\d\d$").hasMatch(val)){return "Type!!!!";}
@@ -330,6 +362,7 @@ class Cell {  //1과목
     });
     return result;
   }
+  */
 }
 
 /*

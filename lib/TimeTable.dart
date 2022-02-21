@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/intl.dart';
 import 'dart:async';
 
-import 'SaveData.dart';
+import 'DataHub.dart';
 
 class TimeTable extends StatefulWidget{
   @override
@@ -17,11 +17,12 @@ class _TimeTableState extends State<TimeTable> {
 
   //#region value
   SaveData saveData = SaveData();
+  GetData  getData  = GetData();
   Map<int,List<Cell>> data = {0:[],1:[],2:[],3:[],4:[],5:[],6:[],};  //{0:[Cell(),Cell()],1:[Cell(),Cell()],}
   
   DateTime today = DateTime.now();
   int weekActiveIndex = 0;
-  int weekSelectIndex = -1;
+  int weekSelectIndex = -10;
   int cellActiveIndex = -1;
 
   List<String> weektoText = ["월","화","수","목","금","토","일","ㅗ"];
@@ -66,7 +67,7 @@ class _TimeTableState extends State<TimeTable> {
       setState(() {
         today = DateTime.now();
         weekActiveIndex = today.weekday-1;
-        if(weekSelectIndex==-1) weekSelectIndex = weekActiveIndex;
+        if(data[weekSelectIndex]==null) weekSelectIndex++;// = weekActiveIndex;
         int cellEndNextIndex = data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"]);
         cellActiveIndex = cellEndNextIndex;
         timerTest++;
@@ -163,7 +164,6 @@ class _TimeTableState extends State<TimeTable> {
   @override
   Widget build(BuildContext context) {
     if(!timerIsPlaying) {
-      dio();
       timerIsPlaying = true;
       data.forEach((k,v) => load(k));
       start();
@@ -177,7 +177,7 @@ class _TimeTableState extends State<TimeTable> {
         Stack(
           alignment: Alignment.center,
           children: [
-            cellActiveIndex == -1?
+            cellActiveIndex < 0?
             Container(
               //color: Colors.amber, //특정색(남은시간 배경색) ==> Scaffold색으로 사용
               width: double.infinity,
@@ -220,19 +220,24 @@ class _TimeTableState extends State<TimeTable> {
               ),
             ),
             //color: Colors.amberAccent, //리스트 배경색 ==> BoxDecoration사용으로 필요가 없어짐
-            //padding: EdgeInsets.all(40),
-            child: ListView.builder(
+            child: 
+            data[weekSelectIndex]==null?
+            Center(
+              child: CircularProgressIndicator(),
+            )
+            :ListView.builder(
               shrinkWrap: true,
-              itemCount:  (weekSelectIndex!=-1?data[weekSelectIndex]!:[]).length,
+              itemCount:  data[weekSelectIndex]!.length,
               itemBuilder: (context, index) => 
               Card(
                 color: (index==cellActiveIndex)&(weekActiveIndex==weekSelectIndex)?Colors.amber:Colors.blue, //리스트카드 색
                 child: Container(
                   padding: EdgeInsets.fromLTRB(50,20,50,20),
                   child: topActive(
-                    (weekSelectIndex!=-1?data[weekSelectIndex]!:[])[index],
+                    data[weekSelectIndex]![index],
                     func: (e){
                       print(e);
+                      /*
                       e.editDialog(context).then((value){
                         if(value){
                           print("[${DateFormat.Hms().format(today)}]Get!! value : $value");
@@ -241,16 +246,12 @@ class _TimeTableState extends State<TimeTable> {
                           print("GET!! but.. False!");
                         }
                       });
+                      */
                       //save(weekSelectIndex);
                     }
-                  ),//topActive(Cell(label: "$index교시")),
+                  ),
                 )
-              )/*
-              Container(
-                color: index==cellActiveIndex?Colors.green:Colors.blue,
-                padding: EdgeInsets.fromLTRB(50,20,50,10),
-                child: topActive(data[weekSelectIndex]![index]),//topActive(Cell(label: "$index교시")),
-              )*/
+              )
             ),
           )
         )
@@ -301,6 +302,9 @@ class _TimeTableState extends State<TimeTable> {
                       textColor: Colors.white,
                       onPressed: (){
                         Cell newCell = Cell();
+                        add(weekSelectIndex, newCell);
+                        save(weekSelectIndex);
+                        /*
                         newCell.editDialog(context).then((value){
                           if(value){
                             print("[$newCell]Get!! value : $value");
@@ -310,6 +314,7 @@ class _TimeTableState extends State<TimeTable> {
                             print("GET!! but.. False! => add close");
                           }
                         });
+                        */
                         print('Add_clicked');
                       },
                     ),
@@ -348,6 +353,7 @@ class _TimeTableState extends State<TimeTable> {
                       color: Colors.grey.shade600,
                       textColor: Colors.white,
                       onPressed: (){
+                        //getData.setTimeDialog(context);
                         print('Setting_clicked');
                       },
                     ),
@@ -363,20 +369,6 @@ class _TimeTableState extends State<TimeTable> {
   //#endregion
 
   
-  //#region Dio
-  dio() async{
-    print("qweqweqwe");
-    Response? response;
-    var dio = Dio();
-    response = await dio.get("https://open.neis.go.kr/hub/schoolInfo", queryParameters: {
-      "Type":"json",
-	    "pIndex":1,
-	    "pSize":10,
-	    "KEY":"ff7b0526cb3243afbb640bb84ae9465e",
-    });
-    print(response.data.toString());
-  }
-  //#endregion
 
 }
 
