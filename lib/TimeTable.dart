@@ -69,6 +69,10 @@ class _TimeTableState extends State<TimeTable> {
         weekActiveIndex = today.weekday-1;
         if(data[weekSelectIndex]==null) weekSelectIndex++;// = weekActiveIndex;
         int cellEndNextIndex = data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"]);
+        print("""
+data[weekActiveIndex] : ${data[weekActiveIndex]}
+data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"] : ${data[weekActiveIndex]!.indexWhere((element)=>element.remainDuration(today)["endYet"])}
+""");
         cellActiveIndex = cellEndNextIndex;
         timerTest++;
       });
@@ -204,7 +208,7 @@ class _TimeTableState extends State<TimeTable> {
                 func: (e){},
                 isMainCell: true)//Cell(label: "1교시$timerTest",subject: "과학",detail: "가나다",start: [08,30,00], end: [09,20,00]))
             ),
-            Positioned(bottom: 0, child: Text("Time : ${DateFormat.Hms().format(today)} | Week : $weekActiveIndex | WeekS : $weekSelectIndex")),
+            Positioned(bottom: 0, child: Text("Time : ${DateFormat.Hms().format(today)} | Week : $weekActiveIndex | WeekS : $weekSelectIndex | Active : $cellActiveIndex ")),
           ],
         ),
         Expanded( 
