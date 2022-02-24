@@ -41,10 +41,17 @@ AutoScroll : https://stackoverflow.com/questions/43485529/programmatically-scrol
 > Card List는 모서리 부분의 색이 부자연스러워서 Scrollable Stack 사용
 
 ---
+<<<<<<< HEAD
 ### StatusBar
 StatusBar Height : https://velog.io/@loakick/Flutter-상단-상태바-높이-값-얻기-qwjxe4rcj7 <br/>
 StatusBar Color : https://stackoverflow.com/questions/52489458/how-to-change-status-bar-color-in-flutter <br/>
 > 상단 상태바 꾸미기
+=======
+### Stack
+Stack : https://medium.flutterdevs.com/stack-and-positioned-widget-in-flutter-3d1a7b30b09a <br/>
+Stack Scroll : https://stackoverflow.com/questions/54359662/how-to-make-stack-layout-scroll-able-using-singlechildscrollview <br/>
+> 모서리를 채우기 위해 Card List대신 Scrollable Stack 사용
+>>>>>>> c5fff4c1c42849634e26e5b069516deac3d73cf3
 
 ---
 ### Wheel Pageview (ScrollBar / Transform / PageView)
