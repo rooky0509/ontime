@@ -1,42 +1,187 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
-import 'package:ontime/page/schedule.dart';
-import 'package:ontime/page/selfcheck.dart';
-import 'package:ontime/page/bus.dart';
-import 'package:ontime/page/lunch.dart';
-import 'package:ontime/page/setting.dart';
-
-import 'package:ontime/providers/time.dart';
-
-import 'package:ontime/widgets/time.dart';
-
-void main() {
-  runApp(MyApp());
-}
-
+void main() => runApp(MyApp());
+//https://medium.com/flutter-community/credit-card-slider-flutter-1edec451103a
 class MyApp extends StatelessWidget {
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      systemNavigationBarColor: Colors.grey.shade200, // navigation bar color
+      statusBarColor: Colors.grey.shade200, // status bar color
+      statusBarIconBrightness: Brightness.dark
+    ));
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Home(),
+      home: HomePage(),
     );
   }
 }
 
-class Home extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final PageController _pageController = PageController(
+    initialPage: 0, //먼저 보여주는 페이지
+    viewportFraction: 1 //뷰가 채우는 값 [ ex) 1:1화면에 1개 , 1/2:1화면에 2개 ]
+  );
+
+  //No changes here
+  @override
+  Widget build(BuildContext context) {
+    double statusBarHeight = MediaQuery.of(context).padding.top;
+    return Scaffold(
+      backgroundColor: Colors.grey.shade200,
+      body: Container(
+        padding: EdgeInsets.only(top: statusBarHeight),
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: PageView.builder(
+                physics: BouncingScrollPhysics(),
+                controller: _pageController,
+                itemCount: 100,
+                itemBuilder: (context, index) => pageInner(index),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  //Changes here only
+  pageInner(int index) {
+    return AnimatedBuilder(
+      animation: _pageController,
+      builder: (context, child) {
+        double value = 1.0;
+        String test = "test!!";
+        if (_pageController.position.haveDimensions) {
+          value = _pageController.page! - index;
+
+          if (value >= 0) {
+            //pi = 180
+            double _lowerLimit = pi/1;
+            double _upperLimit = pi/2;
+            //value = (_upperLimit - (value.abs() * (_upperLimit - _lowerLimit)))
+            //    .clamp(_lowerLimit, _upperLimit);
+            //value = _upperLimit - value;
+            //value *= -1;
+            //value = _lowerLimit;
+            test = "_lowerLimit: ${_lowerLimit} \n_upperLimit: ${_upperLimit}";
+          }
+        } else {
+          //Won't work properly in case initialPage in changed in PageController
+          if(index == 0){
+            value = 0;
+          } else if(index == 1){
+            value = -1;
+          }
+        }
+        List<MaterialColor> cols = [Colors.red,Colors.green,Colors.blue,Colors.purple,Colors.amber,Colors.orange];
+        return Transform(
+          transform: Matrix4.identity()
+            ..setEntry(3, 2, 0.002)
+            ..rotateY(-value)
+            //..rotateX(value)//(50-index)/100*5
+            ,
+          alignment: Alignment.center,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            color: Colors.grey.shade200,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                  flex: 3,
+                  child : Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "Schedule",
+                      style: TextStyle(
+                        fontSize: 50,
+                        color: (cols[index%cols.length]).shade300,
+                        fontWeight: FontWeight.bold
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 7,
+                  child: Container(
+                    decoration: BoxDecoration(
+                        color: (cols[index%cols.length]).shade300,
+                      borderRadius: BorderRadius.circular(100)
+                    ),
+                  )
+                )
+              ],
+            ),
+          )
+        );
+      },
+      //child: Card(color: Colors.blue,),
+    );
+  }
+}
+
+class OnboardingPage extends StatelessWidget {
+  const OnboardingPage(
+      {Key? key,
+      required this.text,
+      required this.color,
+      required this.title})
+      : super(key: key);
+
+  final String title;
+  final String text;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        SizedBox(
+          height: 50,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Text(
+            title,
+            style: TextStyle(fontSize: 48),
+          ),
+        ),
+        SizedBox(
+          height: 37,
+        ),
+        Expanded(
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Container(color:Colors.teal)),
+        ),
+        SizedBox(
+          height: 12,
+        ),
+      ],
+    );
+  }
+}
+/* 
+  @override
+  Widget build(BuildContext context) {
     ScrollController _controller = ScrollController();
-	  GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey();
+    double statusBarHeight = MediaQuery.of(context).padding.top;
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    double tapWidth = width*0.9;
+    double tapWidth = width*0.85;
+    double tapRadius = 33;
 
     void _scroll(double offset) {
       _controller.animateTo(
@@ -46,24 +191,17 @@ class Home extends StatelessWidget {
       );
     }
 
-    Widget Pos({required int index, required Color color, required Function onPressed}){
-      
+    Widget stackContainer({required int index, required Function onPressed, required Color color, required Widget child}){
+      String tag = index==0?"Schedule_heroTag":"$index}qwe";
       return Positioned(
-        top: 0,
-        left: (tapWidth-50)*index,
-        width: tapWidth,
-        height: height,
+        top: 0, left: (tapWidth-tapRadius)*index,
+        width: tapWidth, height: height,
         child: GestureDetector(
-          onTap: (){
-            onPressed();
-            print("Tap:$index");
-          },
+          onTap: (){onPressed();print("Tap:${tapRadius/2}");},
           child:Container(
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.horizontal(right: Radius.circular(50)),
-            ),
-            child: Text("index:$index"),
+            padding: EdgeInsets.fromLTRB(tapRadius+10, tapRadius/3+statusBarHeight, tapRadius/3+10, tapRadius/3+10),
+            decoration: BoxDecoration(color: color,borderRadius: BorderRadius.horizontal(right: Radius.circular(tapRadius)),),
+            child: child,
           ),
         )
       );
@@ -77,7 +215,7 @@ class Home extends StatelessWidget {
         child: Stack(
           children:[
             Container(
-              width: (tapWidth-50)*9,
+              width: (tapWidth-tapRadius)*9,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
@@ -86,18 +224,76 @@ class Home extends StatelessWidget {
                 )
               ),
             ),
-            Pos(index: 8, color: Colors.blue.shade900 ,onPressed: (){_scroll(_controller.position.minScrollExtent);}),
-            Pos(index: 7, color: Colors.blue.shade800 ,onPressed: (){}),
-            Pos(index: 6, color: Colors.blue.shade700 ,onPressed: (){}),
-            Pos(index: 5, color: Colors.blue.shade600 ,onPressed: (){}),
-            Pos(index: 4, color: Colors.blue.shade500 ,onPressed: (){}),
-            Pos(index: 3, color: Colors.blue.shade400 ,onPressed: (){}),
-            Pos(index: 2, color: Colors.blue.shade300 ,onPressed: (){}),
-            Pos(index: 1, color: Colors.blue.shade200 ,onPressed: (){}),
-            Pos(index: 0, color: Colors.blue.shade100 ,onPressed: (){}),
-            Builder(builder: (context) {
-              return Pos(index: -1, color: Colors.blue.shade50 ,onPressed: (){Scaffold.of(context).openDrawer();});
-            }),
+            stackContainer(
+              index: 8, onPressed: (){_scroll(_controller.position.minScrollExtent);},color: Colors.blue.shade900,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 7, onPressed: (){},color: Colors.blue.shade800,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 6, onPressed: (){},color: Colors.blue.shade700,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 5, onPressed: (){},color: Colors.blue.shade600,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 4, onPressed: (){},color: Colors.blue.shade500,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 3, onPressed: (){},color: Colors.blue.shade400,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 2, onPressed: (){},color: Colors.blue.shade300,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 1, onPressed: (){},color: Colors.blue.shade200,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: 0, onPressed: (){Navigator.push(context, MaterialPageRoute(builder: (context) => Schedule()));},color: Colors.blue.shade100,
+              child:Container(
+                color: Colors.red.withOpacity(0.05),
+                child:Text("132"),
+              )
+            ),
+            stackContainer(
+              index: -1, onPressed: (){_scroll(_controller.position.maxScrollExtent);},color: Colors.blue.shade900,
+              child:Container(
+                color: Colors.red.withOpacity(0.5),
+                child:Text("132"),
+              )
+            ),
             
           ]
         )
@@ -109,9 +305,6 @@ class Home extends StatelessWidget {
       ),
     );
   }
-}
-
-/* 
 
 Container(
   width: width*0.5,

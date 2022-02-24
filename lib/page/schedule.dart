@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
 
-class SecondPage extends StatelessWidget {
+class Schedule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      body: GridView.count(
-        crossAxisCount: 10, //1 개의 행에 보여줄 item 개수
-        childAspectRatio: 1 / 4, //item 의 가로 1, 세로 2 의 비율
-        mainAxisSpacing: 10, //수평 Padding
-        crossAxisSpacing: 10, //수직 Padding
-        children: [
-          InkWell(
-            child:Hero(
-              tag: "tag_example",
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-              )
+      body: Container(
+        padding: EdgeInsets.only(top: statusBarHeight),
+        child: AspectRatio(
+          aspectRatio: 16/9,
+          child:  Card(
+            color: Colors.amber,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16.0),
             ),
-            onTap: () {
-                Navigator.pop(context);
-            },
-          )
-        ]
-      ),
+            child: Container(
+              padding: EdgeInsets.all(10),
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    "1교시 수학",
+                    style: TextStyle(
+                      fontSize: 30
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(color: Colors.red.withOpacity(0.1),),
+                  ),
+                  Text(
+                    "1교시 수학",
+                    style: TextStyle(
+                      fontSize: 30
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ),
+        ),
+      )
     );
   }
 }
+//Navigator.pop(context);
