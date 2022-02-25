@@ -5,12 +5,6 @@ import 'package:ontime/providers/providers.dart';
 
 class Bus extends StatelessWidget {
   ChangeNotifier provider = BusProvider();
-  Bus({provider});
-
-  Widget setProvider(ChangeNotifier provider){
-    this.provider = provider;
-    return this;
-  }
 
   @override
   Widget build(BuildContext context) {  

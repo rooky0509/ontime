@@ -5,12 +5,6 @@ import 'package:ontime/providers/providers.dart';
 
 class Setting extends StatelessWidget {
   ChangeNotifier provider = SettingProvider();
-  Setting({provider});
-
-  Widget setProvider(ChangeNotifier provider){
-    this.provider = provider;
-    return this;
-  }
 
   @override
   Widget build(BuildContext context) {  

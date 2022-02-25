@@ -5,12 +5,6 @@ import 'package:ontime/providers/providers.dart';
 
 class Lunch extends StatelessWidget {
   ChangeNotifier provider = LunchProvider();
-  Lunch({provider});
-
-  Widget setProvider(ChangeNotifier provider){
-    this.provider = provider;
-    return this;
-  }
 
   @override
   Widget build(BuildContext context) {  

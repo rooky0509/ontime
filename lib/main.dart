@@ -19,7 +19,21 @@ List pages = [
   {"key" : "Lunch", "page" : Lunch(), "provider": LunchProvider(), "widget": LunchWidget(), },
   {"key" : "Setting", "page" : Setting(), "provider": SettingProvider(), "widget": SettingWidget(), },
 ];
-List<MaterialColor> cols = [Colors.red,Colors.orange,Colors.amber,Colors.lime,Colors.green,Colors.teal,Colors.cyan,Colors.blue,Colors.indigo,Colors.purple,Colors.pink,Colors.brown,Colors.grey];
+List<MaterialColor> cols = [
+  Colors.red,
+  Colors.orange,
+  //Colors.amber,
+  //Colors.lime,
+  Colors.green,
+  Colors.teal,
+  Colors.cyan,
+  Colors.blue,
+  Colors.indigo,
+  Colors.purple,
+  Colors.pink,
+  Colors.brown,
+  //Colors.grey
+];
 Color backgroundColor = Colors.grey.shade300;
 void main() {
   runApp(   //<- runApp에 추가하여 MaterialApp 전체에 적용되게 수정한다.
@@ -75,7 +89,7 @@ class _HomePageState extends State<HomePage> {
        */
       String key = pages[index]["key"];
       dynamic page = pages[index]["page"];
-      ChangeNotifier provider = pages[index]["provider"]; 
+      ChangeNotifier provider = ScheduleProvider();//pages[index]["provider"]; 
       Widget widget = pages[index]["widget"];
 
       return AnimatedBuilder(
@@ -132,8 +146,9 @@ class _HomePageState extends State<HomePage> {
                             onPressed: () async{
                               final result = await Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context)=>page.setProvider(provider)),
+                                MaterialPageRoute(builder: (context)=>page),//.setProvider(provider)
                               );
+                              print("key : $result");
                             },
                             minWidth: double.infinity,
                             height: 100,

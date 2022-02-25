@@ -5,12 +5,6 @@ import 'package:ontime/providers/providers.dart';
 
 class Selfcheck extends StatelessWidget {
   ChangeNotifier provider = SelfcheckProvider();
-  Selfcheck({provider});
-
-  Widget setProvider(ChangeNotifier provider){
-    this.provider = provider;
-    return this;
-  }
 
   @override
   Widget build(BuildContext context) {  

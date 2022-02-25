@@ -5,12 +5,6 @@ import 'package:ontime/providers/providers.dart';
 
 class Schedule extends StatelessWidget {
   ChangeNotifier provider = ScheduleProvider();
-  Schedule({provider});
-
-  Widget setProvider(ChangeNotifier provider){
-    this.provider = provider;
-    return this;
-  }
 
   @override
   Widget build(BuildContext context) {  
@@ -64,7 +58,7 @@ class ScheduleWidget extends StatelessWidget {
             onPressed: () {
               context.read<ScheduleProvider>().add();
             },
-            child: Icon(Icons.add,size: 40,)),
+            child: Icon(Icons.add,)),
         SizedBox(
           width: 40,
         ),
