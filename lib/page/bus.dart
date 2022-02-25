@@ -2,14 +2,43 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ontime/providers/providers.dart';
 
+
 class Bus extends StatelessWidget {
+  ChangeNotifier provider = BusProvider();
+  Bus({provider});
+
+  Widget setProvider(ChangeNotifier provider){
+    this.provider = provider;
+    return this;
+  }
+
   @override
   Widget build(BuildContext context) {  
     double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      body: Container(
-        padding: EdgeInsets.only(top: statusBarHeight),
-        child: Text("BusPage")
+      body: Column(
+        children: [
+          Expanded(
+            child: ChangeNotifierProvider(
+              create: (BuildContext context) => provider,
+              child: Container(
+                color: Colors.teal.withOpacity(0.03),
+                padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
+                child: BusWidget(),
+              )
+            ),
+          ),
+          MaterialButton(
+            onPressed: (){
+              Navigator.pop(context);
+            },
+            minWidth: double.infinity,
+            height: 100,
+            //color: (cols[index%cols.length]).shade300,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(100))),
+            child: Text("Open[$key]"),
+          ),
+        ],
       )
     );
   }

@@ -13,12 +13,14 @@ import 'package:ontime/page/setting.dart';
 
 
 List pages = [
-  {"key" : "Schedule", "class" : Schedule(), "provider": ScheduleProvider(), "widget": ScheduleWidget(), },
-  {"key" : "Selfcheck", "class" : Selfcheck(), "provider": SelfcheckProvider(), "widget": SelfcheckWidget(), },
-  {"key" : "Bus", "class" : Bus(), "provider": BusProvider(), "widget": BusWidget(), },
-  {"key" : "Lunch", "class" : Lunch(), "provider": LunchProvider(), "widget": LunchWidget(), },
-  {"key" : "Setting", "class" : Setting(), "provider": SettingProvider(), "widget": SettingWidget(), },
+  {"key" : "Schedule", "page" : Schedule(), "provider": ScheduleProvider(), "widget": ScheduleWidget(), },
+  {"key" : "Selfcheck", "page" : Selfcheck(), "provider": SelfcheckProvider(), "widget": SelfcheckWidget(), },
+  {"key" : "Bus", "page" : Bus(), "provider": BusProvider(), "widget": BusWidget(), },
+  {"key" : "Lunch", "page" : Lunch(), "provider": LunchProvider(), "widget": LunchWidget(), },
+  {"key" : "Setting", "page" : Setting(), "provider": SettingProvider(), "widget": SettingWidget(), },
 ];
+List<MaterialColor> cols = [Colors.red,Colors.orange,Colors.amber,Colors.lime,Colors.green,Colors.teal,Colors.cyan,Colors.blue,Colors.indigo,Colors.purple,Colors.pink,Colors.brown,Colors.grey];
+Color backgroundColor = Colors.grey.shade300;
 void main() {
   runApp(   //<- runApp에 추가하여 MaterialApp 전체에 적용되게 수정한다.
     MultiProvider(
@@ -37,8 +39,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.grey.shade200, // navigation bar color
-      statusBarColor: Colors.grey.shade200, // status bar color
+      systemNavigationBarColor: backgroundColor, // navigation bar color
+      statusBarColor: backgroundColor, // status bar color
       statusBarIconBrightness: Brightness.dark
     ));
     return MaterialApp(
@@ -57,7 +59,7 @@ class _HomePageState extends State<HomePage> {
     initialPage: 0, //먼저 보여주는 페이지
     viewportFraction: 1 //뷰가 채우는 값 [ ex) 1:1화면에 1개 , 1/2:1화면에 2개 ]
   );
-  final List<MaterialColor> cols = [Colors.red,Colors.orange,Colors.amber,Colors.lime,Colors.green,Colors.teal,Colors.cyan,Colors.blue,Colors.indigo,Colors.purple,Colors.pink,Colors.brown,Colors.grey];
+  
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -72,9 +74,10 @@ class _HomePageState extends State<HomePage> {
       ),
        */
       String key = pages[index]["key"];
+      dynamic page = pages[index]["page"];
       ChangeNotifier provider = pages[index]["provider"]; 
       Widget widget = pages[index]["widget"];
-      String anyText = "Index : $index\nColor : ${(cols[index%cols.length]).value.toRadixString(16).toUpperCase().substring(2)}";
+
       return AnimatedBuilder(
         animation: _pageController,
         builder: (context, child) {
@@ -86,7 +89,7 @@ class _HomePageState extends State<HomePage> {
 
             child: Container(
               padding: EdgeInsets.all(20),
-              color: Colors.grey.shade200,
+              color: backgroundColor,
               child: Column(
                 children: <Widget>[
                   Expanded(
@@ -95,7 +98,7 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.all(20),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        "$key\n$anyText",
+                        key,
                         style: TextStyle(
                           fontSize: 50,
                           color: (cols[index%cols.length]).shade300,
@@ -107,18 +110,41 @@ class _HomePageState extends State<HomePage> {
                   Expanded(
                     flex: 7,
                     child: Container(
-                      padding: EdgeInsets.all(30),
+                      //padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
                       width: double.infinity,
                       decoration: BoxDecoration(
-                          color: (cols[index%cols.length]).shade300,
+                        color: (cols[index%cols.length]).shade300,
                         borderRadius: BorderRadius.circular(100)
                       ),
-                      child: ChangeNotifierProvider(
-                        create: (BuildContext context) => provider,
-                        child: widget
-                      ),
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: ChangeNotifierProvider(
+                              create: (BuildContext context) => provider,
+                              child: Container(
+                                color: Colors.teal.withOpacity(0.03),
+                                padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
+                                child: widget,
+                              )
+                            ),
+                          ),
+                          MaterialButton(
+                            onPressed: () async{
+                              final result = await Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context)=>page.setProvider(provider)),
+                              );
+                            },
+                            minWidth: double.infinity,
+                            height: 100,
+                            //color: (cols[index%cols.length]).shade300,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(100))),
+                            child: Text("Open[$key]"),
+                          ),
+                        ],
+                      )
                     ),
-                  )
+                  ),
                 ],
               ),
 
@@ -129,7 +155,7 @@ class _HomePageState extends State<HomePage> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey.shade200,
+      backgroundColor: backgroundColor,
       body: Container(
         padding: EdgeInsets.only(top: statusBarHeight),
         child: Column(

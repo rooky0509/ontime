@@ -71,3 +71,18 @@ PageView : https://spiralmoon.tistory.com/entry/Flutter-여러-페이지를-한-
 PageView ViewportFraction : https://stackoverflow.com/questions/55355462/how-to-display-more-than-one-page-with-pageview <br/>
 > ScrollBar로 형태를 잡는것이 끝난후, PageView로 바꾸어서 약간 수정함
 
+
+---
+### Provider
+Provider : https://dev-yakuza.posstree.com/ko/flutter/provider/ <br/>
+MultiProvider : https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=chandong83&logNo=221934409653
+> Provider로 특정 위젯에서만 상태변경/공유
+
+---
+### Navigator
+Navigator : https://flutter-ko.dev/docs/cookbook/navigation/navigation-basics <br/>
+Navigator Value : https://all-dev-kang.tistory.com/entry/플러터-페이지스크린-간의-데이터-전송 <br/>
+> 화면전환을 위해 사용
+
+
+
