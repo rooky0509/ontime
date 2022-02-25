@@ -30,11 +30,84 @@ class _HomePageState extends State<HomePage> {
     initialPage: 0, //먼저 보여주는 페이지
     viewportFraction: 1 //뷰가 채우는 값 [ ex) 1:1화면에 1개 , 1/2:1화면에 2개 ]
   );
-
-  //No changes here
+  final List<MaterialColor> cols = [Colors.red,Colors.orange,Colors.amber,Colors.lime,Colors.green,Colors.teal,Colors.cyan,Colors.blue,Colors.indigo,Colors.purple,Colors.pink,Colors.brown,Colors.grey];
+  
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
     double statusBarHeight = MediaQuery.of(context).padding.top;
+
+
+    Widget pageInner(int index) {
+      void _scroll(int index) {
+        _pageController.animateTo(
+          width*index,
+          duration: Duration(milliseconds: (_pageController.page!.floor() - index).abs()*300),
+          curve: Curves.fastOutSlowIn,
+        );
+      }
+      return AnimatedBuilder(
+        animation: _pageController,
+        builder: (context, child) {
+          double value = 0.0;
+          if (_pageController.position.haveDimensions) value = _pageController.page! - index;
+          return Transform(
+            transform: Matrix4.identity()..setEntry(3, 2, 0.003)..rotateY(-value),
+            alignment: Alignment.center,
+            child: GestureDetector(
+              onDoubleTap: ()=>_scroll(0),
+              onLongPress: ()=>_scroll(_pageController.page!.floor()+3),
+              child: Container(
+                padding: EdgeInsets.all(20),
+                color: Colors.grey.shade200,
+                child: Column(
+                  children: <Widget>[
+                    Expanded(
+                      flex: 3,
+                      child : Container(
+                        padding: EdgeInsets.all(20),
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          "Schedule\nIndex : $index\nColor : ${(cols[index%cols.length]).value.toRadixString(16).toUpperCase().substring(2)}",
+                          style: TextStyle(
+                            fontSize: 50,
+                            color: (cols[index%cols.length]).shade300,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 7,
+                      child: Container(
+                        padding: EdgeInsets.all(30),
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                            color: (cols[index%cols.length]).shade300,
+                          borderRadius: BorderRadius.circular(100)
+                        ),
+                        child: Text(
+                          "Index : $index\nColor : ${(cols[index%cols.length]).value.toRadixString(16).toUpperCase().substring(2)}",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: (cols[index%cols.length]).shade800,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      )
+                    )
+                  ],
+                ),
+              ),
+            )
+          
+          );
+        },
+      );
+    }
+
+
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       body: Container(
@@ -45,7 +118,7 @@ class _HomePageState extends State<HomePage> {
               child: PageView.builder(
                 physics: BouncingScrollPhysics(),
                 controller: _pageController,
-                itemCount: 100,
+                itemCount: 50,
                 itemBuilder: (context, index) => pageInner(index),
               ),
             )
@@ -54,124 +127,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
-  //Changes here only
-  pageInner(int index) {
-    return AnimatedBuilder(
-      animation: _pageController,
-      builder: (context, child) {
-        double value = 1.0;
-        String test = "test!!";
-        if (_pageController.position.haveDimensions) {
-          value = _pageController.page! - index;
-
-          if (value >= 0) {
-            //pi = 180
-            double _lowerLimit = pi/1;
-            double _upperLimit = pi/2;
-            //value = (_upperLimit - (value.abs() * (_upperLimit - _lowerLimit)))
-            //    .clamp(_lowerLimit, _upperLimit);
-            //value = _upperLimit - value;
-            //value *= -1;
-            //value = _lowerLimit;
-            test = "_lowerLimit: ${_lowerLimit} \n_upperLimit: ${_upperLimit}";
-          }
-        } else {
-          //Won't work properly in case initialPage in changed in PageController
-          if(index == 0){
-            value = 0;
-          } else if(index == 1){
-            value = -1;
-          }
-        }
-        List<MaterialColor> cols = [Colors.red,Colors.green,Colors.blue,Colors.purple,Colors.amber,Colors.orange];
-        return Transform(
-          transform: Matrix4.identity()
-            ..setEntry(3, 2, 0.002)
-            ..rotateY(-value)
-            //..rotateX(value)//(50-index)/100*5
-            ,
-          alignment: Alignment.center,
-          child: Container(
-            padding: EdgeInsets.all(20),
-            color: Colors.grey.shade200,
-            child: Column(
-              children: <Widget>[
-                Expanded(
-                  flex: 3,
-                  child : Container(
-                    padding: EdgeInsets.all(20),
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Schedule",
-                      style: TextStyle(
-                        fontSize: 50,
-                        color: (cols[index%cols.length]).shade300,
-                        fontWeight: FontWeight.bold
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 7,
-                  child: Container(
-                    decoration: BoxDecoration(
-                        color: (cols[index%cols.length]).shade300,
-                      borderRadius: BorderRadius.circular(100)
-                    ),
-                  )
-                )
-              ],
-            ),
-          )
-        );
-      },
-      //child: Card(color: Colors.blue,),
-    );
-  }
-}
-
-class OnboardingPage extends StatelessWidget {
-  const OnboardingPage(
-      {Key? key,
-      required this.text,
-      required this.color,
-      required this.title})
-      : super(key: key);
-
-  final String title;
-  final String text;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        SizedBox(
-          height: 50,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Text(
-            title,
-            style: TextStyle(fontSize: 48),
-          ),
-        ),
-        SizedBox(
-          height: 37,
-        ),
-        Expanded(
-          child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Container(color:Colors.teal)),
-        ),
-        SizedBox(
-          height: 12,
-        ),
-      ],
-    );
-  }
+  
 }
 /* 
   @override
