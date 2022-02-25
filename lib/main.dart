@@ -1,9 +1,36 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-void main() => runApp(MyApp());
+import 'package:provider/provider.dart';
+import 'package:ontime/providers/providers.dart'; 
+
+import 'package:ontime/page/schedule.dart';
+import 'package:ontime/page/selfcheck.dart';
+import 'package:ontime/page/bus.dart';
+import 'package:ontime/page/lunch.dart';
+import 'package:ontime/page/setting.dart';
+
+
+
+List pages = [
+  {"key" : "Schedule", "class" : Schedule(), "provider": ScheduleProvider(), "widget": ScheduleWidget(), },
+  {"key" : "Selfcheck", "class" : Selfcheck(), "provider": SelfcheckProvider(), "widget": SelfcheckWidget(), },
+  {"key" : "Bus", "class" : Bus(), "provider": BusProvider(), "widget": BusWidget(), },
+  {"key" : "Lunch", "class" : Lunch(), "provider": LunchProvider(), "widget": LunchWidget(), },
+  {"key" : "Setting", "class" : Setting(), "provider": SettingProvider(), "widget": SettingWidget(), },
+];
+void main() {
+  runApp(   //<- runApp에 추가하여 MaterialApp 전체에 적용되게 수정한다.
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => SelfcheckProvider()),
+        ChangeNotifierProvider(create: (_) => BusProvider()),
+        ChangeNotifierProvider(create: (_) => LunchProvider()),
+        ChangeNotifierProvider(create: (_) => SettingProvider()),
+      ],
+      child: MyApp()));
+}
 //https://medium.com/flutter-community/credit-card-slider-flutter-1edec451103a
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -31,22 +58,23 @@ class _HomePageState extends State<HomePage> {
     viewportFraction: 1 //뷰가 채우는 값 [ ex) 1:1화면에 1개 , 1/2:1화면에 2개 ]
   );
   final List<MaterialColor> cols = [Colors.red,Colors.orange,Colors.amber,Colors.lime,Colors.green,Colors.teal,Colors.cyan,Colors.blue,Colors.indigo,Colors.purple,Colors.pink,Colors.brown,Colors.grey];
-  
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     double statusBarHeight = MediaQuery.of(context).padding.top;
 
-
     Widget pageInner(int index) {
-      void _scroll(int index) {
-        _pageController.animateTo(
-          width*index,
-          duration: Duration(milliseconds: (_pageController.page!.floor() - index).abs()*300),
-          curve: Curves.fastOutSlowIn,
-        );
-      }
+      /*
+      ChangeNotifierProvider(
+        create: (BuildContext context) => provider,
+        child: widget
+      ),
+       */
+      String key = pages[index]["key"];
+      ChangeNotifier provider = pages[index]["provider"]; 
+      Widget widget = pages[index]["widget"];
+      String anyText = "Index : $index\nColor : ${(cols[index%cols.length]).value.toRadixString(16).toUpperCase().substring(2)}";
       return AnimatedBuilder(
         animation: _pageController,
         builder: (context, child) {
@@ -55,58 +83,50 @@ class _HomePageState extends State<HomePage> {
           return Transform(
             transform: Matrix4.identity()..setEntry(3, 2, 0.003)..rotateY(-value),
             alignment: Alignment.center,
-            child: GestureDetector(
-              onDoubleTap: ()=>_scroll(0),
-              onLongPress: ()=>_scroll(_pageController.page!.floor()+3),
-              child: Container(
-                padding: EdgeInsets.all(20),
-                color: Colors.grey.shade200,
-                child: Column(
-                  children: <Widget>[
-                    Expanded(
-                      flex: 3,
-                      child : Container(
-                        padding: EdgeInsets.all(20),
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          "Schedule\nIndex : $index\nColor : ${(cols[index%cols.length]).value.toRadixString(16).toUpperCase().substring(2)}",
-                          style: TextStyle(
-                            fontSize: 50,
-                            color: (cols[index%cols.length]).shade300,
-                            fontWeight: FontWeight.bold
-                          ),
+
+            child: Container(
+              padding: EdgeInsets.all(20),
+              color: Colors.grey.shade200,
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    flex: 3,
+                    child : Container(
+                      padding: EdgeInsets.all(20),
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "$key\n$anyText",
+                        style: TextStyle(
+                          fontSize: 50,
+                          color: (cols[index%cols.length]).shade300,
+                          fontWeight: FontWeight.bold
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 7,
-                      child: Container(
-                        padding: EdgeInsets.all(30),
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                            color: (cols[index%cols.length]).shade300,
-                          borderRadius: BorderRadius.circular(100)
-                        ),
-                        child: Text(
-                          "Index : $index\nColor : ${(cols[index%cols.length]).value.toRadixString(16).toUpperCase().substring(2)}",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: (cols[index%cols.length]).shade800,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-                      )
-                    )
-                  ],
-                ),
+                  ),
+                  Expanded(
+                    flex: 7,
+                    child: Container(
+                      padding: EdgeInsets.all(30),
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                          color: (cols[index%cols.length]).shade300,
+                        borderRadius: BorderRadius.circular(100)
+                      ),
+                      child: ChangeNotifierProvider(
+                        create: (BuildContext context) => provider,
+                        child: widget
+                      ),
+                    ),
+                  )
+                ],
               ),
+
             )
-          
           );
         },
       );
     }
-
 
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
@@ -118,7 +138,7 @@ class _HomePageState extends State<HomePage> {
               child: PageView.builder(
                 physics: BouncingScrollPhysics(),
                 controller: _pageController,
-                itemCount: 50,
+                itemCount: pages.length,
                 itemBuilder: (context, index) => pageInner(index),
               ),
             )
@@ -130,6 +150,13 @@ class _HomePageState extends State<HomePage> {
   
 }
 /* 
+
+.builder(
+                physics: BouncingScrollPhysics(),
+                controller: _pageController,
+                itemCount: 50,
+                itemBuilder: (context, index) => pageInner(index),
+              ),
   @override
   Widget build(BuildContext context) {
     ScrollController _controller = ScrollController();

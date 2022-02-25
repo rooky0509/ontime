@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ontime/providers/time.dart';
+import 'package:ontime/providers/providers.dart';
 
 class Counter extends StatelessWidget {
   @override

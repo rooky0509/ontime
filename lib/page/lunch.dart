@@ -1,31 +1,51 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:ontime/providers/providers.dart';
 
 class Lunch extends StatelessWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {  
+    double statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      body: GridView.count(
-        crossAxisCount: 10, //1 개의 행에 보여줄 item 개수
-        childAspectRatio: 1 / 4, //item 의 가로 1, 세로 2 의 비율
-        mainAxisSpacing: 10, //수평 Padding
-        crossAxisSpacing: 10, //수직 Padding
-        children: [
-          InkWell(
-            child:Hero(
-              tag: "Lunch_heroTag",
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-              )
-            ),
-            onTap: () {
-                Navigator.pop(context);
-            },
-          )
-        ]
-      ),
+      body: Container(
+        padding: EdgeInsets.only(top: statusBarHeight),
+        child: Text("LunchPage")
+      )
     );
   }
 }
+
+class LunchWidget extends StatelessWidget {
+  const LunchWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    print('LunchPageCounter');
+
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+         Text(
+          "LunchProvider : ${context.watch<LunchProvider>().count.toString()}",
+          style: TextStyle(
+            fontSize: 20,
+          ),
+        ),
+        ElevatedButton(
+            onPressed: () {
+              context.read<LunchProvider>().add();
+            },
+            child: Icon(Icons.add)),
+        SizedBox(
+          width: 40,
+        ),
+        ElevatedButton(
+            onPressed: () {
+              context.read<LunchProvider>().remove();
+            },
+            child: Icon(Icons.remove))
+      ],
+    );
+  }
+}
+//Navigator.pop(context);
