@@ -96,9 +96,9 @@ class _HomePageState extends State<HomePage> {
         animation: _pageController,
         builder: (context, child) {
           double value = 0.0;
-          if (_pageController.position.haveDimensions) value = _pageController.page! - index;
+          if (_pageController.position.haveDimensions) value = _pageController.offset/width - index;//_pageController.page! - index;
           return Transform(
-            transform: Matrix4.identity()..setEntry(3, 2, 0.003)..rotateY(-value),
+            transform: Matrix4.identity()..setEntry(3, 2, 0.002)..rotateY(-value),
             alignment: Alignment.center,
 
             child: Container(
@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                       padding: EdgeInsets.all(20),
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        key,
+                        "$key:",
                         style: TextStyle(
                           fontSize: 50,
                           color: (cols[index%cols.length]).shade300,
