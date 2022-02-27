@@ -1,55 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:ontime/widgets/mainCell.dart';
 
 import 'package:provider/provider.dart';
 import 'package:ontime/providers/providers.dart'; 
 
-import 'package:ontime/page/schedule.dart';
-import 'package:ontime/page/selfcheck.dart';
-import 'package:ontime/page/bus.dart';
-import 'package:ontime/page/lunch.dart';
-import 'package:ontime/page/setting.dart';
+import 'package:ontime/pages/schedule.dart';
+import 'package:ontime/pages/selfcheck.dart';
+import 'package:ontime/pages/bus.dart';
+import 'package:ontime/pages/lunch.dart';
+import 'package:ontime/pages/setting.dart';
 
-
-
-List pages = [
-  {"key" : "Schedule", "page" : Schedule(), "provider": ScheduleProvider(), "widget": ScheduleWidget(), },
-  {"key" : "Selfcheck", "page" : Selfcheck(), "provider": SelfcheckProvider(), "widget": SelfcheckWidget(), },
-  {"key" : "Bus", "page" : Bus(), "provider": BusProvider(), "widget": BusWidget(), },
-  {"key" : "Lunch", "page" : Lunch(), "provider": LunchProvider(), "widget": LunchWidget(), },
-  {"key" : "Setting", "page" : Setting(), "provider": SettingProvider(), "widget": SettingWidget(), },
-];
-List<MaterialColor> cols = [
-  Colors.red,
-  Colors.orange,
-  //Colors.amber,
-  //Colors.lime,
-  Colors.green,
-  Colors.teal,
-  Colors.cyan,
-  Colors.blue,
-  Colors.indigo,
-  Colors.purple,
-  Colors.pink,
-  Colors.brown,
-  //Colors.grey
-];
 Color backgroundColor = Colors.grey.shade300;
+
 void main() {
   runApp(   //<- runApp에 추가하여 MaterialApp 전체에 적용되게 수정한다.
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => ScheduleProvider()),//pages[0]["provider"] as ChangeNotifier
         ChangeNotifierProvider(create: (_) => SelfcheckProvider()),
         ChangeNotifierProvider(create: (_) => BusProvider()),
         ChangeNotifierProvider(create: (_) => LunchProvider()),
         ChangeNotifierProvider(create: (_) => SettingProvider()),
       ],
-      child: MyApp()));
+      child: MyApp()
+    )
+  );
 }
-//https://medium.com/flutter-community/credit-card-slider-flutter-1edec451103a
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -80,95 +58,6 @@ class _HomePageState extends State<HomePage> {
     double height = MediaQuery.of(context).size.height;
     double statusBarHeight = MediaQuery.of(context).padding.top;
 
-    Widget pageInner(int index) {
-      /*
-      ChangeNotifierProvider(
-        create: (BuildContext context) => provider,
-        child: widget
-      ),
-       */
-      String key = pages[index]["key"];
-      dynamic page = pages[index]["page"];
-      ChangeNotifier provider = ScheduleProvider();//pages[index]["provider"]; 
-      Widget widget = pages[index]["widget"];
-
-      return AnimatedBuilder(
-        animation: _pageController,
-        builder: (context, child) {
-          double value = 0.0;
-          if (_pageController.position.haveDimensions) value = _pageController.offset/width - index;//_pageController.page! - index;
-          return Transform(
-            transform: Matrix4.identity()..setEntry(3, 2, 0.002)..rotateY(-value),
-            alignment: Alignment.center,
-
-            child: Container(
-              padding: EdgeInsets.all(20),
-              color: backgroundColor,
-              child: Column(
-                children: <Widget>[
-                  Expanded(
-                    flex: 3,
-                    child : Container(
-                      padding: EdgeInsets.all(20),
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        "$key:",
-                        style: TextStyle(
-                          fontSize: 50,
-                          color: (cols[index%cols.length]).shade300,
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    flex: 7,
-                    child: Container(
-                      //padding: EdgeInsets.fromLTRB(30, 30, 30, 0),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: (cols[index%cols.length]).shade300,
-                        borderRadius: BorderRadius.circular(100)
-                      ),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: ChangeNotifierProvider(
-                              create: (BuildContext context) => provider,
-                              child: Container(
-                                color: Colors.teal.withOpacity(0.03),
-                                padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
-                                child: widget,
-                              )
-                            ),
-                          ),
-                          MaterialButton(
-                            onPressed: () async{
-                              final result = await Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context)=>page),//.setProvider(provider)
-                              );
-                              print("key : $result");
-                            },
-                            minWidth: double.infinity,
-                            height: 100,
-                            //color: (cols[index%cols.length]).shade300,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(100))),
-                            child: Text("Open[$key]"),
-                          ),
-                        ],
-                      )
-                    ),
-                  ),
-                ],
-              ),
-
-            )
-          );
-        },
-      );
-    }
-
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Container(
@@ -179,8 +68,12 @@ class _HomePageState extends State<HomePage> {
               child: PageView.builder(
                 physics: BouncingScrollPhysics(),
                 controller: _pageController,
-                itemCount: pages.length,
-                itemBuilder: (context, index) => pageInner(index),
+                itemCount: 1,
+                itemBuilder: (context, index) => mainCell(
+                  pageController : _pageController,
+                  index : index,
+                  page : Schedule(),
+                ),
               ),
             )
           ],

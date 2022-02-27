@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:ontime/providers/providers.dart';
 
 
-class Lunch extends StatelessWidget {
-  ChangeNotifier provider = LunchProvider();
+class Setting extends StatelessWidget {
+  ChangeNotifier provider = SettingProvider();
 
   @override
   Widget build(BuildContext context) {  
@@ -18,7 +18,7 @@ class Lunch extends StatelessWidget {
               child: Container(
                 color: Colors.teal.withOpacity(0.03),
                 padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
-                child: LunchWidget(),
+                child: SettingWidget(),
               )
             ),
           ),
@@ -38,25 +38,25 @@ class Lunch extends StatelessWidget {
   }
 }
 
-class LunchWidget extends StatelessWidget {
-  const LunchWidget({Key? key}) : super(key: key);
+class SettingWidget extends StatelessWidget {
+  const SettingWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('LunchPageCounter');
+    print('SettingPageCounter');
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
          Text(
-          "LunchProvider : ${context.watch<LunchProvider>().count.toString()}",
+          "SettingProvider : ${context.watch<SettingProvider>().count.toString()}",
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         ElevatedButton(
             onPressed: () {
-              context.read<LunchProvider>().add();
+              context.read<SettingProvider>().add();
             },
             child: Icon(Icons.add)),
         SizedBox(
@@ -64,11 +64,26 @@ class LunchWidget extends StatelessWidget {
         ),
         ElevatedButton(
             onPressed: () {
-              context.read<LunchProvider>().remove();
+              context.read<SettingProvider>().remove();
             },
             child: Icon(Icons.remove))
       ],
     );
+  }
+}
+
+class SettingProvider with ChangeNotifier {
+  int _count = 0;
+  int get count => _count;
+
+  void add() {
+    _count++;
+    notifyListeners();
+  }
+
+  void remove() {
+    _count--;
+    notifyListeners();
   }
 }
 //Navigator.pop(context);

@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:ontime/providers/providers.dart';
 
 
-class Selfcheck extends StatelessWidget {
-  ChangeNotifier provider = SelfcheckProvider();
+class Lunch extends StatelessWidget {
+  ChangeNotifier provider = LunchProvider();
 
   @override
   Widget build(BuildContext context) {  
@@ -18,7 +18,7 @@ class Selfcheck extends StatelessWidget {
               child: Container(
                 color: Colors.teal.withOpacity(0.03),
                 padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
-                child: SelfcheckWidget(),
+                child: LunchWidget(),
               )
             ),
           ),
@@ -38,25 +38,25 @@ class Selfcheck extends StatelessWidget {
   }
 }
 
-class SelfcheckWidget extends StatelessWidget {
-  const SelfcheckWidget({Key? key}) : super(key: key);
+class LunchWidget extends StatelessWidget {
+  const LunchWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('SelfcheckPageCounter');
+    print('LunchPageCounter');
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
          Text(
-          "SelfcheckProvider : ${context.watch<SelfcheckProvider>().count.toString()}",
+          "LunchProvider : ${context.watch<LunchProvider>().count.toString()}",
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         ElevatedButton(
             onPressed: () {
-              context.read<SelfcheckProvider>().add();
+              context.read<LunchProvider>().add();
             },
             child: Icon(Icons.add)),
         SizedBox(
@@ -64,11 +64,26 @@ class SelfcheckWidget extends StatelessWidget {
         ),
         ElevatedButton(
             onPressed: () {
-              context.read<SelfcheckProvider>().remove();
+              context.read<LunchProvider>().remove();
             },
             child: Icon(Icons.remove))
       ],
     );
+  }
+}
+
+class LunchProvider with ChangeNotifier {
+  int _count = 0;
+  int get count => _count;
+
+  void add() {
+    _count++;
+    notifyListeners();
+  }
+
+  void remove() {
+    _count--;
+    notifyListeners();
   }
 }
 //Navigator.pop(context);

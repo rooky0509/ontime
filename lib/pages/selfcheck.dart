@@ -3,8 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:ontime/providers/providers.dart';
 
 
-class Setting extends StatelessWidget {
-  ChangeNotifier provider = SettingProvider();
+class Selfcheck extends StatelessWidget {
+  ChangeNotifier provider = SelfcheckProvider();
 
   @override
   Widget build(BuildContext context) {  
@@ -18,7 +18,7 @@ class Setting extends StatelessWidget {
               child: Container(
                 color: Colors.teal.withOpacity(0.03),
                 padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
-                child: SettingWidget(),
+                child: SelfcheckWidget(),
               )
             ),
           ),
@@ -38,25 +38,25 @@ class Setting extends StatelessWidget {
   }
 }
 
-class SettingWidget extends StatelessWidget {
-  const SettingWidget({Key? key}) : super(key: key);
+class SelfcheckWidget extends StatelessWidget {
+  const SelfcheckWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    print('SettingPageCounter');
+    print('SelfcheckPageCounter');
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
          Text(
-          "SettingProvider : ${context.watch<SettingProvider>().count.toString()}",
+          "SelfcheckProvider : ${context.watch<SelfcheckProvider>().count.toString()}",
           style: TextStyle(
             fontSize: 20,
           ),
         ),
         ElevatedButton(
             onPressed: () {
-              context.read<SettingProvider>().add();
+              context.read<SelfcheckProvider>().add();
             },
             child: Icon(Icons.add)),
         SizedBox(
@@ -64,11 +64,26 @@ class SettingWidget extends StatelessWidget {
         ),
         ElevatedButton(
             onPressed: () {
-              context.read<SettingProvider>().remove();
+              context.read<SelfcheckProvider>().remove();
             },
             child: Icon(Icons.remove))
       ],
     );
+  }
+}
+
+class SelfcheckProvider with ChangeNotifier {
+  int _count = 0;
+  int get count => _count;
+
+  void add() {
+    _count++;
+    notifyListeners();
+  }
+
+  void remove() {
+    _count--;
+    notifyListeners();
   }
 }
 //Navigator.pop(context);
