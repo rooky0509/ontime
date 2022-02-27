@@ -51,6 +51,13 @@ class _HomePageState extends State<HomePage> {
     initialPage: 0, //먼저 보여주는 페이지
     viewportFraction: 1 //뷰가 채우는 값 [ ex) 1:1화면에 1개 , 1/2:1화면에 2개 ]
   );
+  final List _classes = [
+    Schedule(),
+    Selfcheck(),
+    Bus(),
+    Lunch(),
+    Setting(),
+  ];
   
   @override
   Widget build(BuildContext context) {
@@ -68,11 +75,11 @@ class _HomePageState extends State<HomePage> {
               child: PageView.builder(
                 physics: BouncingScrollPhysics(),
                 controller: _pageController,
-                itemCount: 1,
+                itemCount: _classes.length,
                 itemBuilder: (context, index) => mainCell(
                   pageController : _pageController,
                   index : index,
-                  page : Schedule(),
+                  page : _classes[index],
                 ),
               ),
             )
@@ -84,7 +91,35 @@ class _HomePageState extends State<HomePage> {
   
 }
 /* 
-
+PageView.builder(
+                physics: BouncingScrollPhysics(),
+                controller: _pageController,
+                itemCount: _classes.length,
+                itemBuilder: (context, index) => mainCell(
+                  pageController : _pageController,
+                  index : index,
+                  page : _classes[index],
+                ),
+              ),
+PageView(
+                physics: BouncingScrollPhysics(),
+                controller: _pageController,
+                children: _classes.map((_class) => mainCell(
+                  pageController : _pageController,
+                  index : 0,
+                  page : _class,
+                )).toList(),
+              )
+PageView.builder(
+                physics: BouncingScrollPhysics(),
+                controller: _pageController,
+                itemCount: 1,
+                itemBuilder: (context, index) => mainCell(
+                  pageController : _pageController,
+                  index : index,
+                  page : Schedule(),
+                ),
+              ),
 .builder(
                 physics: BouncingScrollPhysics(),
                 controller: _pageController,

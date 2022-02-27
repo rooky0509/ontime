@@ -1,72 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ontime/providers/providers.dart';
 
+class Selfcheck {
+  SelfcheckProvider provider = SelfcheckProvider();
+  String title = "Selfcheck"; //제목
+  Widget card = SelfcheckWidget(); //간략화된 위젯
+  Widget page = SelfcheckPage(); //페이지 위젯
+}
 
-class Selfcheck extends StatelessWidget {
-  ChangeNotifier provider = SelfcheckProvider();
-
+class SelfcheckPage extends StatelessWidget {
+  /*
+    값 읽기 : context.select((SelfcheckProvider value) => value.count)
+    값 변경 : context.read<SelfcheckProvider>().add();
+  */
   @override
-  Widget build(BuildContext context) {  
-    double statusBarHeight = MediaQuery.of(context).padding.top;
-    return Scaffold(
-      body: Column(
-        children: [
-          Expanded(
-            child: ChangeNotifierProvider(
-              create: (BuildContext context) => provider,
-              child: Container(
-                color: Colors.teal.withOpacity(0.03),
-                padding: EdgeInsets.fromLTRB(30, 30, 30, 10),
-                child: SelfcheckWidget(),
-              )
-            ),
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          context.select((SelfcheckProvider value) => value.count).toString(), // count를 화면에 출력
+          style: TextStyle(
+            fontSize: 100.0,
+            backgroundColor: Colors.amber,
+            color: Colors.blue,
           ),
-          MaterialButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            minWidth: double.infinity,
-            height: 100,
-            //color: (cols[index%cols.length]).shade300,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(bottom: Radius.circular(100))),
-            child: Text("Open[$key]"),
-          ),
-        ],
-      )
+        ),
+        ElevatedButton(
+          onPressed: () {
+            context.read<SelfcheckProvider>().add();
+          },
+          child: Icon(Icons.add,)
+        ),
+        SizedBox(
+          width: 40,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            context.read<SelfcheckProvider>().remove();
+          },
+          child: Icon(Icons.remove)
+        )
+      ],
     );
   }
 }
 
 class SelfcheckWidget extends StatelessWidget {
-  const SelfcheckWidget({Key? key}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
-    print('SelfcheckPageCounter');
-
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-         Text(
-          "SelfcheckProvider : ${context.watch<SelfcheckProvider>().count.toString()}",
-          style: TextStyle(
-            fontSize: 20,
-          ),
+        Text(
+          context.select((SelfcheckProvider value) => value.count).toString(), // count를 화면에 출력
+          style: TextStyle(fontSize: 40.0),
         ),
         ElevatedButton(
-            onPressed: () {
-              context.read<SelfcheckProvider>().add();
-            },
-            child: Icon(Icons.add)),
+          onPressed: () {
+            context.read<SelfcheckProvider>().add();
+          },
+          child: Icon(Icons.add,)
+        ),
         SizedBox(
           width: 40,
         ),
         ElevatedButton(
-            onPressed: () {
-              context.read<SelfcheckProvider>().remove();
-            },
-            child: Icon(Icons.remove))
+          onPressed: () {
+            context.read<SelfcheckProvider>().remove();
+          },
+          child: Icon(Icons.remove)
+        )
       ],
     );
   }
@@ -74,7 +78,7 @@ class SelfcheckWidget extends StatelessWidget {
 
 class SelfcheckProvider with ChangeNotifier {
   int _count = 0;
-  int get count => _count;
+  int get count => _count;  
 
   void add() {
     _count++;
@@ -82,6 +86,16 @@ class SelfcheckProvider with ChangeNotifier {
   }
 
   void remove() {
+    _count--;
+    notifyListeners();
+  }
+
+  void save() { // →Shared
+    _count--;
+    notifyListeners();
+  }
+
+  void get() {  // ←Shared
     _count--;
     notifyListeners();
   }
