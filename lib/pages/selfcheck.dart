@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Selfcheck {
   SelfcheckProvider provider = SelfcheckProvider();
@@ -70,7 +71,25 @@ class SelfcheckWidget extends StatelessWidget {
             context.read<SelfcheckProvider>().remove();
           },
           child: Icon(Icons.remove)
-        )
+        ),
+        SizedBox(
+          width: 40,
+        ),/* 
+        ElevatedButton(
+          onPressed: () {
+            context.read<SelfcheckProvider>().save();
+          },
+          child: Icon(Icons.save)
+        ),
+        SizedBox(
+          width: 40,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            context.read<SelfcheckProvider>().get();
+          },
+          child: Icon(Icons.get_app)
+        ), */
       ],
     );
   }
@@ -82,22 +101,26 @@ class SelfcheckProvider with ChangeNotifier {
 
   void add() {
     _count++;
+    print("$_count");
     notifyListeners();
   }
 
   void remove() {
     _count--;
+    print("$_count");
     notifyListeners();
+  }/* 
+  void save() async{ // →Shared
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('counter', _count);
+    print("setInt!!@ at self");
   }
 
-  void save() { // →Shared
-    _count--;
+  void get() async{  // ←Shared
+    final prefs = await SharedPreferences.getInstance();
+    _count = prefs.getInt('counter') ?? 0;
     notifyListeners();
-  }
-
-  void get() {  // ←Shared
-    _count--;
-    notifyListeners();
-  }
+    print("getInt!!@ at self");
+  } */
 }
 //Navigator.pop(context);

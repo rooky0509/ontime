@@ -30,7 +30,7 @@ class mainCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    double pageWidth = MediaQuery.of(context).size.width* pageController.viewportFraction;//MediaQuery.of(context).size.width;
     double boxRadius = 100.0;
     MaterialColor color = cols[index%cols.length];
 
@@ -42,7 +42,7 @@ class mainCell extends StatelessWidget {
         animation: pageController,
         builder: (context, child) {
           double value = 0;
-          if (pageController.position.haveDimensions) value = pageController.offset/width - index;//_pageController.page! - index;
+          if (pageController.position.haveDimensions) value = pageController.offset/pageWidth - index;//_pageController.page! - index;
           return Transform(
             transform: Matrix4.identity()..setEntry(3, 2, 0.002)..rotateY(-value),
             alignment: Alignment.center,
