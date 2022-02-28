@@ -55,7 +55,7 @@ class SelfcheckWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          context.select((SelfcheckProvider value) => value.count).toString(), // count를 화면에 출력
+          "${context.select((SelfcheckProvider value) => value.count).toString()}\n${context.select((SelfcheckProvider value) => value.title).toString()}", // count를 화면에 출력
           style: TextStyle(fontSize: 40.0),
         ),
         ElevatedButton(
@@ -99,11 +99,13 @@ class SelfcheckWidget extends StatelessWidget {
 class SelfcheckProvider with ChangeNotifier {
   int _count = 0;
   int get count => _count;  
-  final SaveData _saveData = SaveData(tableName: "count", tableAttributede: {
-    "iddd" : "INTEGER PRIMARY KEY",
-    "numA" : "INTEGER",
-    "numB" : "INTEGER",
-    "numC" : "INTEGER",
+  String _title = "e";
+  String get title => _title;  
+  final SaveData _saveData = SaveData(tableName: "sabvbe", tableAttributede: {
+    "start" : "INTEGER PRIMARY KEY",
+    "len" : "INTEGER",
+    "title" : "TEXT",
+    "detail" : "TEXT",
   });
 
   void add() {
@@ -121,27 +123,28 @@ class SelfcheckProvider with ChangeNotifier {
   void save() async{ // →DB
     print("\n\n------save : START");
     _saveData.INSERT(data: {
-      "iddd" : 1,
-      "numA" : _count*1,
-      "numB" : _count*2,
-      "numC" : _count*3,
-    });
-    print("------save : FINISH");
+      "start" : 1,
+      "len" : _count*1,
+      "title" : "ttt$_count}e",
+      "detail" : "ddd$_count}e",
+    }).then((value) => print("------save : FINISH"));
   }
 
   void get() async{  // ←DB
     print("\n\n------get : START");
     _saveData.SELECT().then((value) => print("getAll : value = [\n  ${value.join(',\n  ')}\n]"));
-    _saveData.SELECT(whereKey: "iddd", whereArg: 1).then((value){
+    _saveData.DELETE();
+    /* _saveData.SELECT(whereKey: "start", whereArg: 1).then((value){
       print("get : value =  : $value");
       if(value.isEmpty){
         print("get : value is Empty");
       }else{
-        _count = value[0]["numC"];
+        _count = value[0]["start"];
+        _title = value[0]["title"];
         notifyListeners();
         print("------get : FINISH");
       }
-    });
+    }); */
   }
 }
 //Navigator.pop(context);

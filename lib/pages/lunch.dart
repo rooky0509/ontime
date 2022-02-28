@@ -70,6 +70,15 @@ class LunchWidget extends StatelessWidget {
             context.read<LunchProvider>().remove();
           },
           child: Icon(Icons.remove)
+        ),
+        SizedBox(
+          width: 40,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            context.read<LunchProvider>().run();
+          },
+          child: Icon(Icons.move_to_inbox)
         )
       ],
     );
@@ -86,6 +95,11 @@ class LunchProvider with ChangeNotifier {
   }
 
   void remove() {
+    _count--;
+    notifyListeners();
+  }
+
+  void run() {
     _count--;
     notifyListeners();
   }

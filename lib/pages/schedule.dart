@@ -59,7 +59,7 @@ class ScheduleWidget extends StatelessWidget {
       children: [
         Text(
           context.select((ScheduleProvider value) => value.str).toString(), // count를 화면에 출력
-          style: TextStyle(fontSize: 40.0),
+          style: TextStyle(fontSize: 20.0),
         ),
         ElevatedButton(
           onPressed: () {
@@ -102,28 +102,31 @@ class ScheduleWidget extends StatelessWidget {
 class ScheduleProvider with ChangeNotifier {
   int start = 0;
   int len = 0;
+  int week = 0;
   String title = "";
   String detail = "";
+
   String _str = "";
   String get str => _str;  
-  final SaveData _saveData = SaveData(tableName: "SCtest", tableAttributede: {
+  final SaveData _saveData = SaveData(tableName: "sabvbe", tableAttributede: {
     "start" : "INTEGER PRIMARY KEY",
     "len" : "INTEGER",
-    "title" : "VARCHAR",
-    "detail" : "VARCHAR",
+    "title" : "TEXT",
+    "detail" : "TEXT",
   });
 
   void add() {
     DateTime now = DateTime.now(); //now.hour*3600 + now.minute*60 + now.second
-    start = now.hour*3600 + now.minute*60 + now.second;
-    _str = "AT : $start \n$len \n$title : $detail";
-    print(DateTime(now.year,now.month,now.day).add(Duration(seconds: start)));
+    week = now.weekday-1;
+    start = (now.hour*3600 + now.minute*60 + now.second) + (86400 * week);// [0~86399] + [0, 86400, 86400*2, ...] = [0~86399,86400~172,799]
+    title = "Title : $start ~ ${start+len}";
+    detail = "Detail : ${start%86400} ~ ${(start+len)%86400}";
+    print("${now.weekday}/$start = ${DateTime(now.year,now.month,now.day).add(Duration(seconds: start))}");
     notifyListeners();
   }
 
   void remove() {
     len += 10;
-    _str = "AT : $start \n$len \n$title : $detail";
     print("$len");
     notifyListeners();
   }
@@ -133,26 +136,27 @@ class ScheduleProvider with ChangeNotifier {
     _saveData.INSERT(data: {
       "start" : start,
       "len" : len,
-      "title" : "TITLE$len-",
-      "detail" : "DETAIL$len--",
-    });
-    print("------save : FINISH");
+      "title" : title,
+      "detail" : "$detail : $week",
+    }).then((value) => print("------save : FINISH"));
   }
 
 
   void get() async{  // ←DB
     print("\n\n------get : START");
     //_saveData.SELECT().then((value) => print("getAll : value = [\n  ${value.join(',\n  ')}\n]"));
-    _saveData.SELECT().then((value){
+    _saveData.SELECT(orderKey: "start").then((value){
       print("get : value =  : $value");
       if(value.isEmpty){
         print("get : value is Empty");
       }else{
-        start = value[0]["start"];
-        len = value[0]["len"];
-        title = value[0]["title"];
-        detail = value[0]["detail"];
-        _str = "AT : $start \n$len \n$title : $detail";
+        int l = value.length-1;
+        start = value[l]["start"]%86400;
+        len = value[l]["len"];
+        week = value[l]["start"]~/86400;
+        title = value[l]["title"];
+        detail = value[l]["detail"];
+        _str = "${value[l]["start"]}=>\nstart : $start[$len] \n$title \n$detail";
         notifyListeners();
         print("------get : FINISH");
       }

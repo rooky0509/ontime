@@ -19,15 +19,16 @@ class SaveData {
   Future<Database> get database async {
     return _database??//데이터 베이스가 있으면 중복호출하지 않기 위해 변수에 있는 데이터베이스를 그대로 반환한다.
     openDatabase(//openDatabase 메서드를 호출하여 데이터베이스를 OPEN한다.
-      join(await getDatabasesPath(), 'fixed_database.db'), //경로를 저장한다.
+      join(await getDatabasesPath(), 'fixeddddd_database.db'), //경로를 저장한다.
       onCreate: (db, version) => createTable(db), //onCreate 인자의 생성한 디비를 넣어주어 테이블을 생성합니다.
       version: 1, //데이터베이스의 업그레이드와 다운그레이드를 함으로써, 수정하기 위한 경로를 제공
     );
   }
   
   void createTable(Database db) {//테이블을 만들어 줍니다.
-    print("CREATE TABLE ${tableName!}(\n      ${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(',\n      ')}\n)");
-    db.execute("CREATE TABLE ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})");
+    String command = "CREATE TABLE ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})";
+    print(command);
+    db.execute(command);
     /* db.execute(
       'CREATE TABLE location_cities (id INTEGER PRIMARY KEY, value TEXT)'
     );//이 아래로 여러 개의 테이블을 한번에 만들어도 됨.
@@ -94,11 +95,12 @@ class SaveData {
       conflictAlgorithm: ConflictAlgorithm.replace
     );
   }
-  Future<void> DELETE({required String whereKey, required dynamic whereArg}) async {
+  Future<void> DELETE({String? whereKey, dynamic whereArg}) async {
     Database db = await database;
     await db.delete(
       tableName!,
-      where: '$whereKey = ?', whereArgs: [whereArg]
+      where: (whereKey==null)&(whereArg==null)?null:'$whereKey = ?',
+      whereArgs: (whereKey==null)&(whereArg==null)?null:[whereArg!],
     );
   }
   Future<void> UPDATE({required Map<String,dynamic> data}) async {
