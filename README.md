@@ -89,9 +89,10 @@ SQLite : https://docs.flutter.dev/cookbook/persistence/sqlite <br/>
 SQLite : https://flutter-ko.dev/docs/cookbook/persistence/sqlite <br/>
 QueryLanguage : https://ko.wikipedia.org/wiki/데이터베이스_언어 <br/>
 SQLite(raw~~) : https://dev-yakuza.posstree.com/ko/flutter/widget/sqflite/ <br/>
-SQLite(Code) : https://kimiszero.tistory.com/76
-> Shared대신 많은 데이터를 저장하기위해 사용
-> SQL을 사전에 알고있어 이해가 비교적 쉬웠음
+SQLite(Code) : https://kimiszero.tistory.com/76 <br/>
+SQLite(Code) : https://daldalhanstory.tistory.com/245 <br/>
+CREATEeror : https://stackoverflow.com/questions/13724809/keep-getting-sqliteexception-no-such-table-exception </br>
+> Shared대신 많은 데이터를 저장하기위해 사용 / SQL을 사전에 알고있어 이해가 비교적 쉬웠음
 
 
 

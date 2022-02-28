@@ -99,7 +99,7 @@ class SelfcheckWidget extends StatelessWidget {
 class SelfcheckProvider with ChangeNotifier {
   int _count = 0;
   int get count => _count;  
-  final SaveData _saveData = SaveData.instance..set(tableName: "Schedule", tableAttributede: {
+  final SaveData _saveData = SaveData(tableName: "count", tableAttributede: {
     "iddd" : "INTEGER PRIMARY KEY",
     "numA" : "INTEGER",
     "numB" : "INTEGER",
@@ -119,21 +119,28 @@ class SelfcheckProvider with ChangeNotifier {
   }
 
   void save() async{ // →DB
-    _saveData.UPDATE(data: {
+    print("\n\n------save : START");
+    _saveData.INSERT(data: {
       "iddd" : 1,
       "numA" : _count*1,
       "numB" : _count*2,
       "numC" : _count*3,
     });
-    print("setInt!!@");
+    print("------save : FINISH");
   }
 
   void get() async{  // ←DB
-    print("getInt!START!!!!");
+    print("\n\n------get : START");
+    _saveData.SELECT().then((value) => print("getAll : value = [\n  ${value.join(',\n  ')}\n]"));
     _saveData.SELECT(whereKey: "iddd", whereArg: 1).then((value){
-      _count = value[0]["numC"];
-      notifyListeners();
-      print("getInt!! END----------");
+      print("get : value =  : $value");
+      if(value.isEmpty){
+        print("get : value is Empty");
+      }else{
+        _count = value[0]["numC"];
+        notifyListeners();
+        print("------get : FINISH");
+      }
     });
   }
 }

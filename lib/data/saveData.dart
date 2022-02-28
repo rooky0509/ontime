@@ -10,6 +10,33 @@ import 'package:path_provider/path_provider.dart';
 
 class SaveData {
   //#region Database
+  
+  String? tableName;
+  Map<String,dynamic>? tableAttributede; 
+  SaveData({this.tableName, this.tableAttributede}); //id {} PRIMARY KEY 
+
+  var _database; //데이터베이스 값 반환하기
+  Future<Database> get database async {
+    return _database??//데이터 베이스가 있으면 중복호출하지 않기 위해 변수에 있는 데이터베이스를 그대로 반환한다.
+    openDatabase(//openDatabase 메서드를 호출하여 데이터베이스를 OPEN한다.
+      join(await getDatabasesPath(), 'fixed_database.db'), //경로를 저장한다.
+      onCreate: (db, version) => createTable(db), //onCreate 인자의 생성한 디비를 넣어주어 테이블을 생성합니다.
+      version: 1, //데이터베이스의 업그레이드와 다운그레이드를 함으로써, 수정하기 위한 경로를 제공
+    );
+  }
+  
+  void createTable(Database db) {//테이블을 만들어 줍니다.
+    print("CREATE TABLE ${tableName!}(\n      ${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(',\n      ')}\n)");
+    db.execute("CREATE TABLE ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})");
+    /* db.execute(
+      'CREATE TABLE location_cities (id INTEGER PRIMARY KEY, value TEXT)'
+    );//이 아래로 여러 개의 테이블을 한번에 만들어도 됨.
+      
+    db.execute(
+      'CREATE TABLE "테이블명" (컬럼명1 INTEGER PRIMARY KEY, 컬럼명2 타입, 컬럼명3 타입)'
+    ); */
+  }
+  /* 
   SaveData._privateConstructor();
   static final SaveData instance = SaveData._privateConstructor();
 
@@ -17,8 +44,8 @@ class SaveData {
   Future<Database> get database async => _database ??= await _initDatabase();
 
   Future<Database> _initDatabase() async {
-    Directory documentsDirectory = await getApplicationDocumentsDirectory();//
-    String path = join(documentsDirectory.path, 'groceries.db');
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'onTimeDe.db');
     return await openDatabase(
       path,
       version: 1,
@@ -26,19 +53,18 @@ class SaveData {
     );
   }
   
+  
+  Future _onCreate(Database db, int version) async {
+    print("CREATE TABLE IF NOT EXISTS ${tableName!}(\n      ${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(',\n      ')}\n)");
+    await db.execute("CREATE TABLE IF NOT EXISTS ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})");
+  }
+ */
+
+
+
   //#endregion
   //#region Table
-  String? tableName;
-  Map<String,dynamic>? tableAttributede; 
-  void set({required String tableName, required Map<String,dynamic> tableAttributede}){
-    this.tableName = tableName;
-    this.tableAttributede = tableAttributede; //id INTEGER PRIMARY KEY, name TEXT
-  }
-  Future _onCreate(Database db, int version) async {
-    print("run!! : CREATE TABLE ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})");
-    await db.execute("CREATE TABLE ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})");
-  }
-
+  
   //#endregion
   //#region DML(Data Manipulation Language)
   /*
@@ -49,7 +75,8 @@ class SaveData {
   */
 
   Future<List<Map<String, dynamic>>> SELECT({String? whereKey, dynamic whereArg, String? orderKey, bool ASC = true}) async {
-    Database db = await instance.database;
+    print("[$tableName]SELECT {whereKey=$whereKey, whereArg=$whereArg, orderKey=$orderKey, ASC=$ASC}");
+    Database db = await database;
     //(await db.query('assetportfolio', where: 'kind = ?', whereArgs: [kind])) await db.query(tableName!) await db.rawQuery("SELECT ${tableAttributede!.keys.join(', ')} FROM ${tableName!} $other") //db.query(tableName!, where: '$key = ?', whereArgs: [value]); // db.rawQuery( "SELECT id, name, age FROM dogs" );
     List<Map<String, Object?>> selected = await db.query(
       tableName!, 
@@ -60,18 +87,22 @@ class SaveData {
     return selected;
   }
   Future<void> INSERT({required Map<String,dynamic> data}) async {
-    Database db = await instance.database;
-    await db.insert(tableName!, data);
+    print("[$tableName]INSERT : ${data}");
+    Database db = await database;
+    await db.insert(
+      tableName!, data,
+      conflictAlgorithm: ConflictAlgorithm.replace
+    );
   }
-  Future<void> DELETE({required String whereKey, required String whereArg}) async {
-    Database db = await instance.database;
+  Future<void> DELETE({required String whereKey, required dynamic whereArg}) async {
+    Database db = await database;
     await db.delete(
       tableName!,
-      where: whereKey, whereArgs: [whereArg]
+      where: '$whereKey = ?', whereArgs: [whereArg]
     );
   }
   Future<void> UPDATE({required Map<String,dynamic> data}) async {
-    Database db = await instance.database;
+    Database db = await database;
     await db.update(
       tableName!, data
       //where: whereKey, whereArgs: [whereArg]

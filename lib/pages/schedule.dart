@@ -23,7 +23,7 @@ class SchedulePage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            "SchedulePage!\n${context.select((ScheduleProvider value) => value.count).toString()}", // count를 화면에 출력
+            "SchedulePage!\n${context.select((ScheduleProvider value) => value.str).toString()}", // count를 화면에 출력
             style: TextStyle(
               fontSize: 40.0,
               backgroundColor: Colors.amber,
@@ -58,7 +58,7 @@ class ScheduleWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          context.select((ScheduleProvider value) => value.count).toString(), // count를 화면에 출력
+          context.select((ScheduleProvider value) => value.str).toString(), // count를 화면에 출력
           style: TextStyle(fontSize: 40.0),
         ),
         ElevatedButton(
@@ -100,44 +100,62 @@ class ScheduleWidget extends StatelessWidget {
 }
 
 class ScheduleProvider with ChangeNotifier {
-  int _count = 0;
-  int get count => _count;  
-  final SaveData _saveData = SaveData.instance..set(tableName: "Schedule", tableAttributede: {
-    "iddd" : "INTEGER PRIMARY KEY",
-    "numA" : "INTEGER",
-    "numB" : "INTEGER",
-    "numC" : "INTEGER",
+  int start = 0;
+  int len = 0;
+  String title = "";
+  String detail = "";
+  String _str = "";
+  String get str => _str;  
+  final SaveData _saveData = SaveData(tableName: "SCtest", tableAttributede: {
+    "start" : "INTEGER PRIMARY KEY",
+    "len" : "INTEGER",
+    "title" : "VARCHAR",
+    "detail" : "VARCHAR",
   });
 
   void add() {
-    _count++;
-    print("$_count");
+    DateTime now = DateTime.now(); //now.hour*3600 + now.minute*60 + now.second
+    start = now.hour*3600 + now.minute*60 + now.second;
+    _str = "AT : $start \n$len \n$title : $detail";
+    print(DateTime(now.year,now.month,now.day).add(Duration(seconds: start)));
     notifyListeners();
   }
 
   void remove() {
-    _count--;
-    print("$_count");
+    len += 10;
+    _str = "AT : $start \n$len \n$title : $detail";
+    print("$len");
     notifyListeners();
   }
 
   void save() async{ // →DB
-
-    _saveData.UPDATE(data: {
-      "iddd" : 1,
-      "numA" : _count*1,
-      "numB" : _count*2,
-      "numC" : _count*3,
+    print("\n\n------save : START");
+    _saveData.INSERT(data: {
+      "start" : start,
+      "len" : len,
+      "title" : "TITLE$len-",
+      "detail" : "DETAIL$len--",
     });
-    print("setInt!!@");
+    print("------save : FINISH");
   }
 
+
   void get() async{  // ←DB
-    print("getInt!START!!!!");
-    _saveData.SELECT(whereKey: "iddd", whereArg: 1).then((value){
-      _count = value[0]["numA"];
-      notifyListeners();
-      print("getInt!! END----------");
+    print("\n\n------get : START");
+    //_saveData.SELECT().then((value) => print("getAll : value = [\n  ${value.join(',\n  ')}\n]"));
+    _saveData.SELECT().then((value){
+      print("get : value =  : $value");
+      if(value.isEmpty){
+        print("get : value is Empty");
+      }else{
+        start = value[0]["start"];
+        len = value[0]["len"];
+        title = value[0]["title"];
+        detail = value[0]["detail"];
+        _str = "AT : $start \n$len \n$title : $detail";
+        notifyListeners();
+        print("------get : FINISH");
+      }
     });
   }
 }

@@ -81,7 +81,11 @@ class BusProvider with ChangeNotifier {
   int get count => _count;  
 
   void add() {
-    _count++;
+    DateTime now = DateTime.now(); //now.hour*3600 + now.minute*60 + now.second
+    _count = now.hour*3600 + now.minute*60 + now.second; //DateTime.now().difference(DateTime(2022,02,28,0,0,0)).inSeconds
+    // now.hour*3600 + now.minute*60 + now.second
+    // DateTime get = DateTime(now.year,now.month,now.day);
+    // print(get.add(Duration(seconds: _count)));
     notifyListeners();
   }
 
