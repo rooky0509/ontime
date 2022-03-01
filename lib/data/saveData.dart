@@ -19,16 +19,29 @@ class SaveData {
   Future<Database> get database async {
     return _database??//데이터 베이스가 있으면 중복호출하지 않기 위해 변수에 있는 데이터베이스를 그대로 반환한다.
     openDatabase(//openDatabase 메서드를 호출하여 데이터베이스를 OPEN한다.
-      join(await getDatabasesPath(), 'fixeddddd_database.db'), //경로를 저장한다.
+      join(await getDatabasesPath(), 'fixedddddddddddd_database.db'), //경로를 저장한다.
       onCreate: (db, version) => createTable(db), //onCreate 인자의 생성한 디비를 넣어주어 테이블을 생성합니다.
       version: 1, //데이터베이스의 업그레이드와 다운그레이드를 함으로써, 수정하기 위한 경로를 제공
     );
   }
   
   void createTable(Database db) {//테이블을 만들어 줍니다.
-    String command = "CREATE TABLE ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})";
-    print(command);
-    db.execute(command);
+    print("CREATE TABLE IF NOT EXISTS schedule(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+    db.execute("CREATE TABLE IF NOT EXISTS schedule(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+
+    print("CREATE TABLE IF NOT EXISTS Selfcheck(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+    db.execute("CREATE TABLE IF NOT EXISTS Selfcheck(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+
+    print("CREATE TABLE IF NOT EXISTS Bus(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+    db.execute("CREATE TABLE IF NOT EXISTS Bus(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+
+    print("CREATE TABLE IF NOT EXISTS Lunch(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+    db.execute("CREATE TABLE IF NOT EXISTS Lunch(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+
+    print("CREATE TABLE IF NOT EXISTS Setting(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+    db.execute("CREATE TABLE IF NOT EXISTS Setting(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+
+    //db.execute("CREATE TABLE IF NOT EXISTS ${tableName!}(${tableAttributede!.entries.map((e) => '${e.key} ${e.value}').join(', ')})");
     /* db.execute(
       'CREATE TABLE location_cities (id INTEGER PRIMARY KEY, value TEXT)'
     );//이 아래로 여러 개의 테이블을 한번에 만들어도 됨.
