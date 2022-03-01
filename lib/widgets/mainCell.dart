@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 List<MaterialColor> cols = [
   Colors.red,
@@ -27,7 +28,6 @@ class mainCell extends StatelessWidget {
   PageController pageController;
   int index;
   dynamic page; // != Widget
-
   @override
   Widget build(BuildContext context) {
     double pageWidth = MediaQuery.of(context).size.width* pageController.viewportFraction;//MediaQuery.of(context).size.width;
@@ -75,13 +75,24 @@ class mainCell extends StatelessWidget {
                         color: color.shade300,
                         borderRadius: BorderRadius.circular(boxRadius)
                       ),
+                      /*
+                      
+    print("S : page.provider.get()");
+    page.provider.get().then(
+      (value)=>print("E : page.provider.get()")
+    );
+                      */
                       child: Column(
                         children: [
                           Expanded(
                             child : Container(
                               color: Colors.teal.withOpacity(0.03),
                               padding: EdgeInsets.fromLTRB(30, 30, 30, 00),
-                              child: cardWidget
+                              child: Column(
+                                children: <Widget>[
+                                  cardWidget,
+                                ],
+                              )
                             )
                           ),
                           MaterialButton(

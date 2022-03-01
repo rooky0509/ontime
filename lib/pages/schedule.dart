@@ -9,6 +9,7 @@ class Schedule {
   String title = "Schedule"; //제목
   Widget card = ScheduleWidget(); //간략화된 위젯
   Widget page = SchedulePage(); //페이지 위젯
+  void loading ()=> ScheduleProvider().get();
 }
 
 class SchedulePage extends StatelessWidget {
@@ -51,14 +52,28 @@ class SchedulePage extends StatelessWidget {
   }
 }
 
-class ScheduleWidget extends StatelessWidget {
+class ScheduleWidget extends StatefulWidget {
+  @override
+  _ScheduleWidgetState createState() => _ScheduleWidgetState();
+}
+class _ScheduleWidgetState extends State<ScheduleWidget> {
+  bool load = false;
   @override
   Widget build(BuildContext context) {
-    return Column(
+    print("[ScheduleWidget] load{$load}");
+    if(!(load)) {
+      print("[ScheduleWidget] load is start");
+      context.read<ScheduleProvider>().get().then((value){
+        print("[ScheduleWidget] load is finish");
+        setState(() {load = true;});
+      });
+    }
+    print("[ScheduleWidget] build{$load}");
+    return load?Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          context.select((ScheduleProvider value) => value.str).toString(), // count를 화면에 출력
+          context.select((ScheduleProvider value) => "ScheduleProvider\n${value.str}").toString(), // count를 화면에 출력
           style: TextStyle(fontSize: 20.0),
         ),
         ElevatedButton(
@@ -95,7 +110,7 @@ class ScheduleWidget extends StatelessWidget {
           child: Icon(Icons.get_app)
         ),
       ],
-    );
+    ):CircularProgressIndicator();
   }
 }
 
@@ -107,15 +122,17 @@ class ScheduleProvider with ChangeNotifier {
   String detail = "";
 
   String _str = "";
-  String get str => _str;  
-  final SaveData _saveData = SaveData(tableName: "sabvbe", tableAttributede: {
+  String get str => _str;
+
+  final SaveData _saveData = SaveData(tableName: "schedule", tableAttributede: {
     "start" : "INTEGER PRIMARY KEY",
     "len" : "INTEGER",
     "title" : "TEXT",
     "detail" : "TEXT",
   });
-
+  
   void add() {
+    print("[ScheduleProvider] add");
     DateTime now = DateTime.now(); //now.hour*3600 + now.minute*60 + now.second
     week = now.weekday-1;
     start = (now.hour*3600 + now.minute*60 + now.second) + (86400 * week);// [0~86399] + [0, 86400, 86400*2, ...] = [0~86399,86400~172,799]
@@ -126,13 +143,14 @@ class ScheduleProvider with ChangeNotifier {
   }
 
   void remove() {
+    print("[ScheduleProvider] remove");
     len += 10;
     print("$len");
     notifyListeners();
   }
 
-  void save() async{ // →DB
-    print("\n\n------save : START");
+  Future<void> save() async{ // →DB
+    print("[ScheduleProvider] save");
     _saveData.INSERT(data: {
       "start" : start,
       "len" : len,
@@ -142,9 +160,11 @@ class ScheduleProvider with ChangeNotifier {
   }
 
 
-  void get() async{  // ←DB
-    print("\n\n------get : START");
+  Future<void> get() async{  // ←DB
+    print("[ScheduleProvider] get");
+    print("------get : START");
     //_saveData.SELECT().then((value) => print("getAll : value = [\n  ${value.join(',\n  ')}\n]"));
+    //_saveData.SELECT().then((value) => print("getAll : value = [  ${value.join(',  ')}  ]"));
     _saveData.SELECT(orderKey: "start").then((value){
       print("get : value =  : $value");
       if(value.isEmpty){

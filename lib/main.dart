@@ -58,13 +58,12 @@ class _HomePageState extends State<HomePage> {
     Lunch(),
     Setting(),
   ];
-  
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     double statusBarHeight = MediaQuery.of(context).padding.top;
-
     return Scaffold(
       backgroundColor: backgroundColor,
       body: Container(
