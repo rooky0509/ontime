@@ -19,15 +19,15 @@ class SaveData {
   Future<Database> get database async {
     return _database??//데이터 베이스가 있으면 중복호출하지 않기 위해 변수에 있는 데이터베이스를 그대로 반환한다.
     openDatabase(//openDatabase 메서드를 호출하여 데이터베이스를 OPEN한다.
-      join(await getDatabasesPath(), 'fixedddddddddddd_database.db'), //경로를 저장한다.
+      join(await getDatabasesPath(), 'fixeddddddddddddddddd_database.db'), //경로를 저장한다.
       onCreate: (db, version) => createTable(db), //onCreate 인자의 생성한 디비를 넣어주어 테이블을 생성합니다.
       version: 1, //데이터베이스의 업그레이드와 다운그레이드를 함으로써, 수정하기 위한 경로를 제공
     );
   }
   
   void createTable(Database db) {//테이블을 만들어 줍니다.
-    print("CREATE TABLE IF NOT EXISTS schedule(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
-    db.execute("CREATE TABLE IF NOT EXISTS schedule(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
+    print("CREATE TABLE IF NOT EXISTS schedule(id INTEGER PRIMARY KEY, len INTEGER, label TEXT, title TEXT, detail TEXT, tag TEXT)");
+    db.execute("CREATE TABLE IF NOT EXISTS schedule(id INTEGER PRIMARY KEY, len INTEGER, label TEXT, title TEXT, detail TEXT, tag TEXT)");
 
     print("CREATE TABLE IF NOT EXISTS Selfcheck(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");
     db.execute("CREATE TABLE IF NOT EXISTS Selfcheck(start INTEGER PRIMARY KEY, len INTEGER, title TEXT, detail TEXT)");

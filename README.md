@@ -102,5 +102,18 @@ StatelessWidget : https://zeddios.tistory.com/1116 <br/>
 StatefulWidget : https://zeddios.tistory.com/1115 <br/>
 > SLW : 정적 / SFW : 동적
 
+---
+### DateTime
+Format : https://stackoverflow.com/questions/51579546/how-to-format-datetime-in-flutter <br/>
+extension ~ on DateTime : https://stackoverflow.com/questions/52627973/dart-how-to-set-the-hour-and-minute-of-datetime-object <br/>
+> 시간관련 
+
+---
+### Extends / Implements / With
+Extension : https://stackoverflow.com/questions/52627973/dart-how-to-set-the-hour-and-minute-of-datetime-object <br/>
+Extends~ : https://snowdeer.github.io/flutter/2020/06/13/flutter-extends-and-with/ <br/>
+Mixin : https://paulaner80.tistory.com/entry/Dart-mixin-이란-1 <br/>
+> 아직 이해는 잘 못 했지만 이해할 때까지 읽을 것이다
+
 
 

@@ -109,6 +109,15 @@ class _SelfcheckWidgetState extends State<SelfcheckWidget> {
           },
           child: Icon(Icons.get_app)
         ),
+        SizedBox(
+          width: 40,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            context.read<SelfcheckProvider>().clear();
+          },
+          child: Icon(Icons.delete)
+        ),
       ],
     ):CircularProgressIndicator();
   }
@@ -168,6 +177,8 @@ class SelfcheckProvider with ChangeNotifier {
     _saveData.SELECT(orderKey: "start").then((value){
       print("get : value =  : $value");
       if(value.isEmpty){
+        _str = "value is Empty";
+        notifyListeners();
         print("get : value is Empty");
       }else{
         int l = value.length-1;
@@ -180,6 +191,14 @@ class SelfcheckProvider with ChangeNotifier {
         notifyListeners();
         print("------get : FINISH");
       }
+    });
+  }
+
+  Future<void> clear() async{  // ←DB
+    print("[ScheduleProvider] clear");
+    print("------clear : START");
+    _saveData.DELETE().then((value){
+      print("------clear : FINISH");
     });
   }
 }

@@ -168,6 +168,8 @@ class LunchProvider with ChangeNotifier {
     _saveData.SELECT(orderKey: "start").then((value){
       print("get : value =  : $value");
       if(value.isEmpty){
+        _str = "value is Empty";
+        notifyListeners();
         print("get : value is Empty");
       }else{
         int l = value.length-1;
@@ -180,6 +182,14 @@ class LunchProvider with ChangeNotifier {
         notifyListeners();
         print("------get : FINISH");
       }
+    });
+  }
+
+  Future<void> clear() async{  // ←DB
+    print("[ScheduleProvider] clear");
+    print("------clear : START");
+    _saveData.DELETE().then((value){
+      print("------clear : FINISH");
     });
   }
 }

@@ -88,11 +88,7 @@ class mainCell extends StatelessWidget {
                             child : Container(
                               color: Colors.teal.withOpacity(0.03),
                               padding: EdgeInsets.fromLTRB(30, 30, 30, 00),
-                              child: Column(
-                                children: <Widget>[
-                                  cardWidget,
-                                ],
-                              )
+                              child: cardWidget,
                             )
                           ),
                           MaterialButton(
