@@ -105,6 +105,7 @@ StatefulWidget : https://zeddios.tistory.com/1115 <br/>
 ---
 ### DateTime
 Format : https://stackoverflow.com/questions/51579546/how-to-format-datetime-in-flutter <br/>
+Patterns : https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html <br/>
 extension ~ on DateTime : https://stackoverflow.com/questions/52627973/dart-how-to-set-the-hour-and-minute-of-datetime-object <br/>
 > 시간관련 
 
