@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 extension Time on DateTime {
-  DateTime set({
+  /* DateTime set({
     int? year,
     int? month,
     int? day,
@@ -21,7 +21,7 @@ extension Time on DateTime {
       millisecond ?? this.millisecond,
       microsecond ?? this.microsecond,
     );
-  }
+  } */
   DateTime setTime({
     int? hour,
     int? minute,
@@ -40,6 +40,6 @@ extension Time on DateTime {
     return this.hour*3600 + this.minute*60 + this.second;
   }
   String format({String? newPattern}) {
-    return DateFormat(newPattern??"hh:mm:ss").format(this);
+    return DateFormat(newPattern??"hh:mm:ss a").format(this); 
   }
 }

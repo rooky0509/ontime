@@ -89,7 +89,7 @@ class SaveData {
   */
 
   Future<List<Map<String, dynamic>>> SELECT({String? whereKey, dynamic whereArg, String? orderKey, bool ASC = true}) async {
-    print("[$tableName]SELECT {whereKey=$whereKey, whereArg=$whereArg, orderKey=$orderKey, ASC=$ASC}");
+    print("[SaveData] SELECT[$tableName] {whereKey=$whereKey, whereArg=$whereArg, orderKey=$orderKey, ASC=$ASC}");
     Database db = await database;
     //(await db.query('assetportfolio', where: 'kind = ?', whereArgs: [kind])) await db.query(tableName!) await db.rawQuery("SELECT ${tableAttributede!.keys.join(', ')} FROM ${tableName!} $other") //db.query(tableName!, where: '$key = ?', whereArgs: [value]); // db.rawQuery( "SELECT id, name, age FROM dogs" );
     List<Map<String, Object?>> selected = await db.query(
